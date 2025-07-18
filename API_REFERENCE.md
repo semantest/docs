@@ -1082,3 +1082,253 @@ async downloadGoogleImage(url: string): Promise<void> {
   return this.downloadImage({ imageUrl: url });
 }
 ```
+
+## @semantest/typescript.client
+
+TypeScript client library for Semantest platform integration.
+
+### Classes
+
+#### SemantestClient
+
+Main client for interacting with Semantest services.
+
+```typescript
+class SemantestClient {
+  constructor(config: ClientConfig);
+  
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  
+  // Event handling
+  on(event: string, handler: EventHandler): void;
+  off(event: string, handler: EventHandler): void;
+  once(event: string, handler: EventHandler): void;
+  
+  // Command execution
+  execute<T>(command: Command): Promise<T>;
+  executeAsync<T>(command: Command): AsyncResult<T>;
+  
+  // Query execution
+  query<T>(query: Query): Promise<T>;
+  subscribe<T>(query: Query, handler: (data: T) => void): Subscription;
+  
+  // Domain-specific clients
+  images: ImagesClient;
+  search: SearchClient;
+  chatgpt: ChatGPTClient;
+  browser: BrowserClient;
+}
+```
+
+**Example:**
+```typescript
+const client = new SemantestClient({
+  serverUrl: 'ws://localhost:3000',
+  apiKey: process.env.SEMANTEST_API_KEY,
+  reconnect: true
+});
+
+await client.connect();
+
+// Execute command
+const result = await client.execute({
+  type: 'google-search',
+  payload: {
+    query: 'semantic web automation',
+    options: { resultsPerPage: 50 }
+  }
+});
+
+// Subscribe to events
+client.on('download-completed', (event) => {
+  console.log(`Downloaded: ${event.fileName}`);
+});
+
+// Use domain-specific client
+const images = await client.images.search('cute cats');
+await client.images.download(images[0].url);
+```
+
+### Interfaces
+
+#### ClientConfig
+
+```typescript
+interface ClientConfig {
+  serverUrl: string;
+  apiKey?: string;
+  timeout?: number;
+  reconnect?: boolean;
+  reconnectDelay?: number;
+  maxReconnectAttempts?: number;
+  headers?: Record<string, string>;
+  debug?: boolean;
+}
+```
+
+#### Command
+
+```typescript
+interface Command {
+  id?: string;
+  type: string;
+  payload: any;
+  correlationId?: string;
+  timeout?: number;
+}
+```
+
+#### Query
+
+```typescript
+interface Query {
+  id?: string;
+  type: string;
+  parameters?: any;
+  pagination?: PaginationOptions;
+}
+```
+
+#### AsyncResult
+
+```typescript
+interface AsyncResult<T> {
+  id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress?: number;
+  result?: T;
+  error?: Error;
+  
+  onProgress(handler: (progress: number) => void): void;
+  onComplete(handler: (result: T) => void): void;
+  onError(handler: (error: Error) => void): void;
+  cancel(): Promise<void>;
+}
+```
+
+### Domain Clients
+
+#### ImagesClient
+
+```typescript
+class ImagesClient {
+  search(query: string, options?: ImageSearchOptions): Promise<ImageResult[]>;
+  download(url: string, options?: DownloadOptions): Promise<DownloadResult>;
+  downloadBatch(urls: string[], options?: BatchDownloadOptions): AsyncResult<BatchDownloadResult>;
+  
+  getDownloadHistory(options?: HistoryOptions): Promise<DownloadHistoryItem[]>;
+  clearDownloadHistory(): Promise<void>;
+}
+```
+
+#### SearchClient
+
+```typescript
+class SearchClient {
+  web(query: string, options?: SearchOptions): Promise<SearchResults>;
+  images(query: string, options?: ImageSearchOptions): Promise<ImageSearchResults>;
+  videos(query: string, options?: VideoSearchOptions): Promise<VideoSearchResults>;
+  news(query: string, options?: NewsSearchOptions): Promise<NewsSearchResults>;
+  
+  suggest(partial: string): Promise<string[]>;
+  trending(): Promise<TrendingTopic[]>;
+}
+```
+
+#### ChatGPTClient
+
+```typescript
+class ChatGPTClient {
+  createConversation(): Promise<Conversation>;
+  getConversation(id: string): Promise<Conversation>;
+  listConversations(): Promise<Conversation[]>;
+  
+  sendMessage(conversationId: string, message: string): Promise<ChatResponse>;
+  streamMessage(conversationId: string, message: string): AsyncIterator<ChatToken>;
+  
+  deleteConversation(id: string): Promise<void>;
+  exportConversation(id: string, format: ExportFormat): Promise<Buffer>;
+}
+```
+
+### Error Handling
+
+```typescript
+class SemantestClientError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly details?: any
+  ) {
+    super(message);
+  }
+}
+
+class ConnectionError extends SemantestClientError {
+  constructor(message: string, public readonly cause?: Error) {
+    super(message, 'CONNECTION_ERROR', { cause });
+  }
+}
+
+class TimeoutError extends SemantestClientError {
+  constructor(operation: string, timeout: number) {
+    super(
+      `Operation '${operation}' timed out after ${timeout}ms`,
+      'TIMEOUT_ERROR',
+      { operation, timeout }
+    );
+  }
+}
+
+class AuthenticationError extends SemantestClientError {
+  constructor(message: string) {
+    super(message, 'AUTH_ERROR');
+  }
+}
+```
+
+### WebSocket Events
+
+The client uses WebSocket for real-time communication:
+
+```typescript
+// Connection events
+client.on('connected', () => console.log('Connected to server'));
+client.on('disconnected', (reason) => console.log('Disconnected:', reason));
+client.on('reconnecting', (attempt) => console.log('Reconnecting...', attempt));
+client.on('error', (error) => console.error('Client error:', error));
+
+// Domain events
+client.on('download-started', (event) => { /* ... */ });
+client.on('download-progress', (event) => { /* ... */ });
+client.on('download-completed', (event) => { /* ... */ });
+client.on('download-failed', (event) => { /* ... */ });
+
+// Custom events
+client.on('custom-event', (data) => { /* ... */ });
+```
+
+### Authentication
+
+```typescript
+// API Key authentication
+const client = new SemantestClient({
+  serverUrl: 'wss://api.semantest.com',
+  apiKey: 'your-api-key'
+});
+
+// Token authentication
+const client = new SemantestClient({
+  serverUrl: 'wss://api.semantest.com',
+  headers: {
+    'Authorization': 'Bearer your-token'
+  }
+});
+
+// Custom authentication
+client.on('authenticate', async () => {
+  const token = await getAuthToken();
+  return { token };
+});
+```
