@@ -251,18 +251,18 @@ researchWorkflow('quantum computing').catch(console.error);
 * Community and Support
 
 ** Getting Help
-- [[https://github.com/rydnr/chatgpt-buddy/discussions][💬 GitHub Discussions]] - Community Q&A and ideas
-- [[https://github.com/rydnr/chatgpt-buddy/issues][🐛 GitHub Issues]] - Bug reports and feature requests
+- [[https://github.com/semantest/semantest/discussions][💬 GitHub Discussions]] - Community Q&A and ideas
+- [[https://github.com/semantest/semantest/issues][🐛 GitHub Issues]] - Bug reports and feature requests
 - [[file:troubleshooting/README.org][🔧 Troubleshooting Guide]] - Common solutions
 
 ** Contributing
 - [[file:contributing/README.org][🤝 Contributing Guide]] - How to get involved
-- [[https://github.com/rydnr/chatgpt-buddy][⭐ Star the Project]] - Show your support
+- [[https://github.com/semantest/semantest][⭐ Star the Project]] - Show your support
 - [[file:community/README.org][👥 Community Hub]] - Join the ecosystem
 
 ** Staying Updated
-- [[https://github.com/rydnr/chatgpt-buddy/releases][📢 Release Notes]] - Latest updates and features
-- [[https://github.com/rydnr/chatgpt-buddy/discussions][💬 Discussions]] - Community updates and announcements
+- [[https://github.com/semantest/semantest/releases][📢 Release Notes]] - Latest updates and features
+- [[https://github.com/semantest/semantest/discussions][💬 Discussions]] - Community updates and announcements
 
 * License and Legal
 
@@ -273,7 +273,7 @@ Semantest is open source software licensed under the GNU General Public License 
 - ✅ You can distribute copies and modifications
 - ✅ Community improvements benefit everyone
 
-See the [[https://github.com/rydnr/chatgpt-buddy/blob/main/LICENSE][LICENSE]] file for complete terms.
+See the [[https://github.com/semantest/semantest/blob/main/LICENSE][LICENSE]] file for complete terms.
 
 * Roadmap and Future
 

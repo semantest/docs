@@ -1,8 +1,8 @@
 # Site settings
-title: "TypeScript-EDA Ecosystem"
-description: "Event-driven architecture tools for modern TypeScript development"
+title: "Semantest Ecosystem"
+description: "AI-driven automation tools for modern web development"
 baseurl: ""
-url: "https://rydnr.github.io/chatgpt-buddy"
+url: "https://semantest.com"
 
 # Build settings
 markdown: kramdown
@@ -14,10 +14,10 @@ collections:
   typescript-eda:
     output: true
     permalink: /:collection/:name/
-  web-buddy:
+  semantest:
     output: true
     permalink: /:collection/:name/
-  chatgpt-buddy:
+  semantest-chatgpt:
     output: true
     permalink: /:collection/:name/
 
@@ -48,27 +48,27 @@ defaults:
       project: "typescript-eda"
   - scope:
       path: ""
-      type: "web-buddy"
+      type: "semantest"
     values:
       layout: "project"
-      project: "web-buddy"
+      project: "semantest"
   - scope:
       path: ""
-      type: "chatgpt-buddy"
+      type: "semantest-chatgpt"
     values:
       layout: "project"
-      project: "chatgpt-buddy"
+      project: "semantest-chatgpt"
 
 # Site navigation
 nav_links:
   - title: "TypeScript-EDA"
     url: "/typescript-eda/"
     description: "Core EDA framework"
-  - title: "Web-Buddy" 
-    url: "/web-buddy/"
-    description: "Web automation framework"
-  - title: "ChatGPT-Buddy"
-    url: "/chatgpt-buddy/"
+  - title: "Semantest" 
+    url: "/semantest/"
+    description: "AI automation framework"
+  - title: "ChatGPT Integration"
+    url: "/semantest-chatgpt/"
     description: "ChatGPT automation"
 
 # Project metadata
@@ -77,17 +77,17 @@ projects:
     name: "TypeScript-EDA"
     description: "Event-driven architecture framework"
     icon: "🏗️"
-    github: "https://github.com/rydnr/typescript-eda"
+    github: "https://github.com/typescript-eda/domain"
     npm: "@typescript-eda/core"
-  web-buddy:
-    name: "Web-Buddy"
-    description: "Generic web automation framework"
-    icon: "🌐"
-    github: "https://github.com/rydnr/web-buddy"
-    npm: "@web-buddy/core"
-  chatgpt-buddy:
-    name: "ChatGPT-Buddy"
-    description: "ChatGPT automation specialist"
+  semantest:
+    name: "Semantest"
+    description: "AI-driven web automation framework"
     icon: "🤖"
-    github: "https://github.com/rydnr/chatgpt-buddy"
-    npm: "@chatgpt-buddy/client"
+    github: "https://github.com/semantest/semantest"
+    npm: "@semantest/browser"
+  semantest-chatgpt:
+    name: "Semantest ChatGPT"
+    description: "ChatGPT automation specialist"
+    icon: "💬"
+    github: "https://github.com/semantest/semantest"
+    npm: "@semantest/chatgpt.com"
