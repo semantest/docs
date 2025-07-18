@@ -1,0 +1,861 @@
+# Pinterest Domain Schemas
+
+Pin:
+  type: object
+  required:
+    - id
+    - title
+    - imageUrl
+    - boardId
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique pin identifier
+      example: "pin_abc123def456"
+    title:
+      type: string
+      description: Pin title
+      example: "Modern JavaScript Patterns"
+    description:
+      type: string
+      description: Pin description
+      example: "A comprehensive guide to modern JavaScript patterns and best practices"
+    imageUrl:
+      type: string
+      format: uri
+      description: URL to the pin image
+      example: "https://i.pinimg.com/pin_abc123def456.jpg"
+    originalImageUrl:
+      type: string
+      format: uri
+      description: Original image URL before processing
+      example: "https://example.com/original-image.jpg"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: URL to the thumbnail
+      example: "https://i.pinimg.com/pin_abc123def456_thumb.jpg"
+    boardId:
+      type: string
+      description: Board ID where the pin is saved
+      example: "board_def456ghi789"
+    board:
+      $ref: "#/Board"
+    creatorId:
+      type: string
+      description: User ID who created the pin
+      example: "user_ghi789jkl012"
+    creator:
+      $ref: "#/User"
+    url:
+      type: string
+      format: uri
+      description: Link URL associated with the pin
+      example: "https://example.com/article"
+    domain:
+      type: string
+      description: Domain of the linked URL
+      example: "example.com"
+    color:
+      type: string
+      description: Dominant color of the image
+      example: "#FF5733"
+    width:
+      type: integer
+      description: Image width in pixels
+      example: 736
+    height:
+      type: integer
+      description: Image height in pixels
+      example: 1104
+    aspectRatio:
+      type: number
+      description: Image aspect ratio
+      example: 0.667
+    altText:
+      type: string
+      description: Alternative text for accessibility
+      example: "JavaScript code snippet showing modern patterns"
+    note:
+      type: string
+      description: Personal note about the pin
+      example: "Great reference for my next project"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the pin was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the pin was last updated
+      example: "2024-01-15T10:30:00Z"
+    savedAt:
+      type: string
+      format: date-time
+      description: When the pin was saved to the board
+      example: "2024-01-15T10:30:00Z"
+    metrics:
+      $ref: "#/PinMetrics"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags associated with the pin
+      example: ["javascript", "programming", "tutorial"]
+    isVideo:
+      type: boolean
+      description: Whether the pin is a video
+      example: false
+    videoDuration:
+      type: integer
+      description: Video duration in seconds
+      example: 60
+    isPrivate:
+      type: boolean
+      description: Whether the pin is private
+      example: false
+    isPromoted:
+      type: boolean
+      description: Whether the pin is promoted
+      example: false
+    source:
+      type: string
+      description: Source of the pin
+      example: "website"
+    category:
+      type: string
+      description: Pin category
+      example: "technology"
+    language:
+      type: string
+      description: Pin language
+      example: "en"
+    metadata:
+      type: object
+      description: Additional pin metadata
+      additionalProperties: true
+
+Board:
+  type: object
+  required:
+    - id
+    - name
+    - ownerId
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique board identifier
+      example: "board_abc123def456"
+    name:
+      type: string
+      description: Board name
+      example: "JavaScript Resources"
+    description:
+      type: string
+      description: Board description
+      example: "A collection of JavaScript tutorials, libraries, and resources"
+    ownerId:
+      type: string
+      description: Board owner user ID
+      example: "user_def456ghi789"
+    owner:
+      $ref: "#/User"
+    coverImageUrl:
+      type: string
+      format: uri
+      description: URL to the board cover image
+      example: "https://i.pinimg.com/board_abc123def456_cover.jpg"
+    url:
+      type: string
+      format: uri
+      description: Pinterest URL for the board
+      example: "https://pinterest.com/user/javascript-resources"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the board was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the board was last updated
+      example: "2024-01-15T10:30:00Z"
+    pinsCount:
+      type: integer
+      description: Number of pins in the board
+      example: 145
+    followersCount:
+      type: integer
+      description: Number of followers
+      example: 2350
+    collaboratorsCount:
+      type: integer
+      description: Number of collaborators
+      example: 3
+    isPrivate:
+      type: boolean
+      description: Whether the board is private
+      example: false
+    isSecret:
+      type: boolean
+      description: Whether the board is secret
+      example: false
+    isCollaborative:
+      type: boolean
+      description: Whether the board allows collaborators
+      example: true
+    collaborators:
+      type: array
+      items:
+        $ref: "#/User"
+      description: Board collaborators
+    category:
+      type: string
+      description: Board category
+      example: "education"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Board tags
+      example: ["javascript", "programming", "web-development"]
+    sections:
+      type: array
+      items:
+        $ref: "#/BoardSection"
+      description: Board sections
+    privacy:
+      type: string
+      enum: ["public", "private", "secret"]
+      description: Board privacy setting
+      example: "public"
+    language:
+      type: string
+      description: Board language
+      example: "en"
+    location:
+      type: string
+      description: Board location
+      example: "San Francisco, CA"
+    website:
+      type: string
+      format: uri
+      description: Associated website
+      example: "https://example.com"
+    metadata:
+      type: object
+      description: Additional board metadata
+      additionalProperties: true
+
+BoardSection:
+  type: object
+  required:
+    - id
+    - title
+    - boardId
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique section identifier
+      example: "section_abc123def456"
+    title:
+      type: string
+      description: Section title
+      example: "React Tutorials"
+    boardId:
+      type: string
+      description: Parent board ID
+      example: "board_def456ghi789"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the section was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the section was last updated
+      example: "2024-01-15T10:30:00Z"
+    pinsCount:
+      type: integer
+      description: Number of pins in the section
+      example: 25
+    position:
+      type: integer
+      description: Section position in the board
+      example: 1
+    pins:
+      type: array
+      items:
+        $ref: "#/Pin"
+      description: Pins in the section
+
+User:
+  type: object
+  required:
+    - id
+    - username
+    - displayName
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique user identifier
+      example: "user_abc123def456"
+    username:
+      type: string
+      description: Pinterest username
+      example: "john_doe_dev"
+    displayName:
+      type: string
+      description: Display name
+      example: "John Doe"
+    firstName:
+      type: string
+      description: First name
+      example: "John"
+    lastName:
+      type: string
+      description: Last name
+      example: "Doe"
+    bio:
+      type: string
+      description: User bio
+      example: "Software Engineer | JavaScript enthusiast | Coffee lover"
+    location:
+      type: string
+      description: User location
+      example: "San Francisco, CA"
+    website:
+      type: string
+      format: uri
+      description: User website
+      example: "https://johndoe.dev"
+    profileImageUrl:
+      type: string
+      format: uri
+      description: Profile image URL
+      example: "https://i.pinimg.com/user_abc123def456.jpg"
+    coverImageUrl:
+      type: string
+      format: uri
+      description: Cover image URL
+      example: "https://i.pinimg.com/user_abc123def456_cover.jpg"
+    url:
+      type: string
+      format: uri
+      description: Pinterest profile URL
+      example: "https://pinterest.com/john_doe_dev"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the user joined Pinterest
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the user profile was last updated
+      example: "2024-01-15T10:30:00Z"
+    boardsCount:
+      type: integer
+      description: Number of boards created
+      example: 25
+    pinsCount:
+      type: integer
+      description: Number of pins created
+      example: 450
+    followersCount:
+      type: integer
+      description: Number of followers
+      example: 1250
+    followingCount:
+      type: integer
+      description: Number of users following
+      example: 180
+    monthlyViews:
+      type: integer
+      description: Monthly profile views
+      example: 15000
+    isVerified:
+      type: boolean
+      description: Whether the user is verified
+      example: false
+    isFollowing:
+      type: boolean
+      description: Whether the current user is following this user
+      example: false
+    isFollowedBy:
+      type: boolean
+      description: Whether this user is following the current user
+      example: false
+    isBusinessAccount:
+      type: boolean
+      description: Whether this is a business account
+      example: false
+    businessName:
+      type: string
+      description: Business name (if business account)
+      example: "John Doe Development"
+    businessType:
+      type: string
+      description: Business type
+      example: "software-development"
+    country:
+      type: string
+      description: User country
+      example: "US"
+    language:
+      type: string
+      description: User language
+      example: "en"
+    gender:
+      type: string
+      description: User gender
+      example: "male"
+    age:
+      type: integer
+      description: User age
+      example: 28
+    interests:
+      type: array
+      items:
+        type: string
+      description: User interests
+      example: ["technology", "programming", "design"]
+    metadata:
+      type: object
+      description: Additional user metadata
+      additionalProperties: true
+
+PinMetrics:
+  type: object
+  properties:
+    saves:
+      type: integer
+      description: Number of saves
+      example: 125
+    comments:
+      type: integer
+      description: Number of comments
+      example: 23
+    impressions:
+      type: integer
+      description: Number of impressions
+      example: 5420
+    clicks:
+      type: integer
+      description: Number of clicks
+      example: 145
+    closeUps:
+      type: integer
+      description: Number of close-ups
+      example: 67
+    shares:
+      type: integer
+      description: Number of shares
+      example: 34
+    clickThroughRate:
+      type: number
+      description: Click-through rate percentage
+      example: 2.7
+    engagementRate:
+      type: number
+      description: Engagement rate percentage
+      example: 4.2
+    reach:
+      type: integer
+      description: Number of unique users reached
+      example: 3250
+    frequency:
+      type: number
+      description: Average frequency of impressions per user
+      example: 1.67
+    lastEngagementAt:
+      type: string
+      format: date-time
+      description: When the last engagement occurred
+      example: "2024-01-15T10:30:00Z"
+    engagementTrend:
+      type: string
+      enum: ["increasing", "decreasing", "stable"]
+      description: Engagement trend
+      example: "increasing"
+    topAgeGroups:
+      type: array
+      items:
+        type: object
+        properties:
+          ageGroup:
+            type: string
+          percentage:
+            type: number
+      description: Top age groups engaging with the pin
+    topGenders:
+      type: array
+      items:
+        type: object
+        properties:
+          gender:
+            type: string
+          percentage:
+            type: number
+      description: Top genders engaging with the pin
+    topCountries:
+      type: array
+      items:
+        type: object
+        properties:
+          country:
+            type: string
+          impressions:
+            type: integer
+          engagement:
+            type: integer
+      description: Top countries by engagement
+    deviceTypes:
+      type: object
+      properties:
+        mobile:
+          type: integer
+        desktop:
+          type: integer
+        tablet:
+          type: integer
+      description: Engagement by device type
+
+# Request/Response Objects
+
+CreatePinRequest:
+  type: object
+  required:
+    - title
+    - imageUrl
+    - boardId
+  properties:
+    title:
+      type: string
+      description: Pin title
+      example: "Modern JavaScript Patterns"
+    description:
+      type: string
+      description: Pin description
+      example: "A comprehensive guide to modern JavaScript patterns"
+    imageUrl:
+      type: string
+      format: uri
+      description: URL to the pin image
+      example: "https://example.com/image.jpg"
+    boardId:
+      type: string
+      description: Board ID to save the pin to
+      example: "board_def456ghi789"
+    sectionId:
+      type: string
+      description: Section ID within the board
+      example: "section_ghi789jkl012"
+    url:
+      type: string
+      format: uri
+      description: Link URL for the pin
+      example: "https://example.com/article"
+    altText:
+      type: string
+      description: Alternative text for accessibility
+      example: "JavaScript code snippet"
+    note:
+      type: string
+      description: Personal note about the pin
+      example: "Great reference for my project"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags for the pin
+      example: ["javascript", "programming"]
+
+UpdatePinRequest:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Updated pin title
+      example: "Updated JavaScript Patterns"
+    description:
+      type: string
+      description: Updated pin description
+      example: "An updated guide to modern JavaScript patterns"
+    boardId:
+      type: string
+      description: New board ID to move the pin to
+      example: "board_jkl012mno345"
+    sectionId:
+      type: string
+      description: New section ID to move the pin to
+      example: "section_mno345pqr678"
+    url:
+      type: string
+      format: uri
+      description: Updated link URL
+      example: "https://example.com/updated-article"
+    altText:
+      type: string
+      description: Updated alternative text
+      example: "Updated JavaScript code snippet"
+    note:
+      type: string
+      description: Updated personal note
+      example: "Updated reference for my project"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Updated tags
+      example: ["javascript", "programming", "advanced"]
+
+CreateBoardRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      description: Board name
+      example: "JavaScript Resources"
+    description:
+      type: string
+      description: Board description
+      example: "A collection of JavaScript tutorials and resources"
+    privacy:
+      type: string
+      enum: ["public", "private", "secret"]
+      description: Board privacy setting
+      example: "public"
+    category:
+      type: string
+      description: Board category
+      example: "education"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Board tags
+      example: ["javascript", "programming"]
+    collaborators:
+      type: array
+      items:
+        type: string
+      description: User IDs of collaborators
+      example: ["user_def456ghi789", "user_ghi789jkl012"]
+    location:
+      type: string
+      description: Board location
+      example: "San Francisco, CA"
+    website:
+      type: string
+      format: uri
+      description: Associated website
+      example: "https://example.com"
+
+UpdateBoardRequest:
+  type: object
+  properties:
+    name:
+      type: string
+      description: Updated board name
+      example: "Advanced JavaScript Resources"
+    description:
+      type: string
+      description: Updated board description
+      example: "An updated collection of JavaScript tutorials and resources"
+    privacy:
+      type: string
+      enum: ["public", "private", "secret"]
+      description: Updated board privacy setting
+      example: "public"
+    category:
+      type: string
+      description: Updated board category
+      example: "education"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Updated board tags
+      example: ["javascript", "programming", "advanced"]
+    location:
+      type: string
+      description: Updated board location
+      example: "San Francisco, CA"
+    website:
+      type: string
+      format: uri
+      description: Updated associated website
+      example: "https://example.com/updated"
+
+CreateBoardSectionRequest:
+  type: object
+  required:
+    - title
+    - boardId
+  properties:
+    title:
+      type: string
+      description: Section title
+      example: "React Tutorials"
+    boardId:
+      type: string
+      description: Parent board ID
+      example: "board_def456ghi789"
+    position:
+      type: integer
+      description: Section position
+      example: 1
+
+PinSearchRequest:
+  type: object
+  properties:
+    query:
+      type: string
+      description: Search query
+      example: "javascript programming"
+    category:
+      type: string
+      description: Category filter
+      example: "technology"
+    color:
+      type: string
+      description: Color filter
+      example: "red"
+    source:
+      type: string
+      description: Source filter
+      example: "website"
+    createdAfter:
+      type: string
+      format: date
+      description: Created after date
+      example: "2024-01-01"
+    createdBefore:
+      type: string
+      format: date
+      description: Created before date
+      example: "2024-01-31"
+    language:
+      type: string
+      description: Language filter
+      example: "en"
+    sortBy:
+      type: string
+      enum: ["relevance", "recent", "popular"]
+      description: Sort order
+      example: "relevance"
+    page:
+      type: integer
+      minimum: 1
+      description: Page number
+      example: 1
+    pageSize:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: Number of results per page
+      example: 20
+
+BoardAnalytics:
+  type: object
+  properties:
+    boardId:
+      type: string
+      description: Board ID
+      example: "board_abc123def456"
+    timeframe:
+      type: string
+      enum: ["day", "week", "month", "quarter", "year"]
+      description: Analytics timeframe
+      example: "month"
+    metrics:
+      type: object
+      properties:
+        totalImpressions:
+          type: integer
+          description: Total impressions
+          example: 125000
+        totalSaves:
+          type: integer
+          description: Total saves
+          example: 3450
+        totalClicks:
+          type: integer
+          description: Total clicks
+          example: 1250
+        totalCloseUps:
+          type: integer
+          description: Total close-ups
+          example: 2100
+        averageEngagementRate:
+          type: number
+          description: Average engagement rate
+          example: 4.2
+        topPerformingPins:
+          type: array
+          items:
+            type: object
+            properties:
+              pinId:
+                type: string
+              title:
+                type: string
+              impressions:
+                type: integer
+              saves:
+                type: integer
+              clicks:
+                type: integer
+        audienceInsights:
+          type: object
+          properties:
+            topAgeGroups:
+              type: array
+              items:
+                type: object
+                properties:
+                  ageGroup:
+                    type: string
+                  percentage:
+                    type: number
+            topGenders:
+              type: array
+              items:
+                type: object
+                properties:
+                  gender:
+                    type: string
+                  percentage:
+                    type: number
+            topCountries:
+              type: array
+              items:
+                type: object
+                properties:
+                  country:
+                    type: string
+                  percentage:
+                    type: number
+            topInterests:
+              type: array
+              items:
+                type: object
+                properties:
+                  interest:
+                    type: string
+                  percentage:
+                    type: number
+    generatedAt:
+      type: string
+      format: date-time
+      description: When the analytics were generated
+      example: "2024-01-15T10:30:00Z"

@@ -1,0 +1,437 @@
+# Video Domain Schemas
+
+Video:
+  type: object
+  required:
+    - id
+    - metadata
+    - quality
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique video identifier
+      example: "video_abc123def456"
+    platformId:
+      type: string
+      description: Platform-specific video ID (YouTube ID)
+      example: "dQw4w9WgXcQ"
+    metadata:
+      $ref: "#/VideoMetadata"
+    quality:
+      $ref: "#/VideoQuality"
+    downloadUrl:
+      type: string
+      format: uri
+      description: Download URL for the video
+      example: "https://cdn.semantest.com/videos/abc123def456.mp4"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: Thumbnail image URL
+      example: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+    isDownloaded:
+      type: boolean
+      description: Whether the video has been downloaded
+      example: true
+    downloadedAt:
+      type: string
+      format: date-time
+      description: When the video was downloaded
+      example: "2024-01-15T10:30:00Z"
+    fileSize:
+      type: integer
+      description: File size in bytes
+      example: 104857600
+    filePath:
+      type: string
+      description: Local file path
+      example: "/downloads/videos/abc123def456.mp4"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the video record was created
+      example: "2024-01-15T10:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the video record was last updated
+      example: "2024-01-15T10:30:00Z"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags associated with the video
+      example: ["music", "pop", "official"]
+    channelId:
+      type: string
+      description: ID of the channel that owns this video
+      example: "channel_def456ghi789"
+    playlistIds:
+      type: array
+      items:
+        type: string
+      description: IDs of playlists containing this video
+      example: ["playlist_ghi789jkl012", "playlist_mno345pqr678"]
+
+VideoMetadata:
+  type: object
+  required:
+    - title
+    - publishedAt
+  properties:
+    title:
+      type: string
+      description: Video title
+      example: "Never Gonna Give You Up"
+    description:
+      type: string
+      description: Video description
+      example: "The official video for 'Never Gonna Give You Up' by Rick Astley"
+    publishedAt:
+      type: string
+      format: date-time
+      description: When the video was published
+      example: "2009-10-25T07:00:00Z"
+    duration:
+      type: integer
+      description: Video duration in seconds
+      example: 212
+    viewCount:
+      type: integer
+      description: Number of views
+      example: 1500000000
+    likeCount:
+      type: integer
+      description: Number of likes
+      example: 15000000
+    dislikeCount:
+      type: integer
+      description: Number of dislikes (if available)
+      example: 500000
+    commentCount:
+      type: integer
+      description: Number of comments
+      example: 2000000
+    language:
+      type: string
+      description: Video language code
+      example: "en"
+    category:
+      type: string
+      description: Video category
+      example: "Music"
+    keywords:
+      type: array
+      items:
+        type: string
+      description: Video keywords/tags
+      example: ["rick astley", "never gonna give you up", "official video"]
+    thumbnails:
+      type: object
+      properties:
+        default:
+          $ref: "#/VideoThumbnail"
+        medium:
+          $ref: "#/VideoThumbnail"
+        high:
+          $ref: "#/VideoThumbnail"
+        standard:
+          $ref: "#/VideoThumbnail"
+        maxres:
+          $ref: "#/VideoThumbnail"
+
+VideoThumbnail:
+  type: object
+  required:
+    - url
+    - width
+    - height
+  properties:
+    url:
+      type: string
+      format: uri
+      description: Thumbnail URL
+      example: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+    width:
+      type: integer
+      description: Thumbnail width in pixels
+      example: 1280
+    height:
+      type: integer
+      description: Thumbnail height in pixels
+      example: 720
+
+VideoQuality:
+  type: object
+  required:
+    - resolution
+    - format
+  properties:
+    resolution:
+      type: string
+      enum: ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p"]
+      description: Video resolution
+      example: "1080p"
+    format:
+      type: string
+      enum: ["mp4", "webm", "mkv", "avi", "mov"]
+      description: Video format
+      example: "mp4"
+    codec:
+      type: string
+      description: Video codec
+      example: "h264"
+    bitrate:
+      type: integer
+      description: Video bitrate in kbps
+      example: 2000
+    fps:
+      type: number
+      description: Frames per second
+      example: 30
+    audioCodec:
+      type: string
+      description: Audio codec
+      example: "aac"
+    audioBitrate:
+      type: integer
+      description: Audio bitrate in kbps
+      example: 128
+
+VideoSearchRequest:
+  type: object
+  required:
+    - query
+  properties:
+    query:
+      type: string
+      description: Search query
+      example: "javascript tutorial"
+    maxResults:
+      type: integer
+      minimum: 1
+      maximum: 50
+      description: Maximum number of results
+      example: 25
+    order:
+      type: string
+      enum: ["relevance", "date", "rating", "title", "videoCount", "viewCount"]
+      description: Sort order for results
+      example: "relevance"
+    publishedAfter:
+      type: string
+      format: date-time
+      description: Only include videos published after this date
+      example: "2024-01-01T00:00:00Z"
+    publishedBefore:
+      type: string
+      format: date-time
+      description: Only include videos published before this date
+      example: "2024-12-31T23:59:59Z"
+    duration:
+      type: string
+      enum: ["any", "short", "medium", "long"]
+      description: Video duration filter
+      example: "medium"
+    quality:
+      type: string
+      enum: ["any", "low", "medium", "high", "hd"]
+      description: Video quality filter
+      example: "hd"
+    channelId:
+      type: string
+      description: Filter by specific channel
+      example: "channel_def456ghi789"
+    categoryId:
+      type: string
+      description: Filter by video category
+      example: "10"
+
+VideoSearchResponse:
+  type: object
+  required:
+    - videos
+    - pagination
+  properties:
+    videos:
+      type: array
+      items:
+        $ref: "#/Video"
+    pagination:
+      $ref: "./common.yaml#/PaginationInfo"
+    totalResults:
+      type: integer
+      description: Total number of results available
+      example: 1000000
+    searchTime:
+      type: number
+      description: Search execution time in milliseconds
+      example: 150.5
+    suggestions:
+      type: array
+      items:
+        type: string
+      description: Search suggestions
+      example: ["javascript tutorial for beginners", "javascript tutorial advanced"]
+
+VideoDownloadRequest:
+  type: object
+  required:
+    - quality
+  properties:
+    quality:
+      $ref: "#/VideoQuality"
+    outputPath:
+      type: string
+      description: Custom output path for the download
+      example: "/downloads/custom/my-video.mp4"
+    startTime:
+      type: integer
+      description: Start time in seconds for partial download
+      example: 30
+    endTime:
+      type: integer
+      description: End time in seconds for partial download
+      example: 120
+    audioOnly:
+      type: boolean
+      description: Download audio only
+      example: false
+    subtitles:
+      type: boolean
+      description: Download subtitles if available
+      example: true
+    subtitleLanguages:
+      type: array
+      items:
+        type: string
+      description: Preferred subtitle languages
+      example: ["en", "es", "fr"]
+
+VideoDownloadResponse:
+  type: object
+  required:
+    - downloadId
+    - status
+    - video
+  properties:
+    downloadId:
+      type: string
+      description: Unique download identifier
+      example: "download_abc123def456"
+    status:
+      $ref: "./common.yaml#/DownloadStatus"
+    video:
+      $ref: "#/Video"
+    progress:
+      type: number
+      minimum: 0
+      maximum: 100
+      description: Download progress percentage
+      example: 45.5
+    estimatedTimeRemaining:
+      type: integer
+      description: Estimated time remaining in seconds
+      example: 120
+    downloadSpeed:
+      type: number
+      description: Download speed in bytes per second
+      example: 1048576
+    error:
+      type: string
+      description: Error message if download failed
+      example: "Video not available in requested quality"
+
+VideoBatchRequest:
+  type: object
+  required:
+    - videos
+  properties:
+    videos:
+      type: array
+      items:
+        type: object
+        required:
+          - videoId
+        properties:
+          videoId:
+            type: string
+            description: Video ID to process
+            example: "video_abc123def456"
+          quality:
+            $ref: "#/VideoQuality"
+          outputPath:
+            type: string
+            description: Custom output path
+            example: "/downloads/batch/video1.mp4"
+    operation:
+      type: string
+      enum: ["download", "analyze", "extract_metadata"]
+      description: Batch operation to perform
+      example: "download"
+    parallelism:
+      type: integer
+      minimum: 1
+      maximum: 10
+      description: Number of parallel operations
+      example: 3
+
+VideoBatchResponse:
+  type: object
+  required:
+    - batchId
+    - status
+    - totalVideos
+  properties:
+    batchId:
+      type: string
+      description: Unique batch operation identifier
+      example: "batch_abc123def456"
+    status:
+      $ref: "./common.yaml#/ProcessingStatus"
+    totalVideos:
+      type: integer
+      description: Total number of videos in batch
+      example: 25
+    processedVideos:
+      type: integer
+      description: Number of videos processed
+      example: 15
+    failedVideos:
+      type: integer
+      description: Number of videos that failed
+      example: 2
+    progress:
+      type: number
+      minimum: 0
+      maximum: 100
+      description: Overall batch progress percentage
+      example: 60.0
+    startedAt:
+      type: string
+      format: date-time
+      description: When the batch operation started
+      example: "2024-01-15T10:00:00Z"
+    estimatedCompletion:
+      type: string
+      format: date-time
+      description: Estimated completion time
+      example: "2024-01-15T10:30:00Z"
+    results:
+      type: array
+      items:
+        type: object
+        properties:
+          videoId:
+            type: string
+            example: "video_abc123def456"
+          status:
+            $ref: "./common.yaml#/ProcessingStatus"
+          result:
+            $ref: "#/Video"
+          error:
+            type: string
+            description: Error message if failed
+            example: "Video not available"

@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: Semantest API Platform
+  description: |
+    Comprehensive API platform for Semantest - enabling external access to all domain modules.
+    
+    ## Features
+    - **Multi-domain support**: Video, Pinterest, Instagram, Unsplash, Twitter content management
+    - **RESTful design**: Resource-based URLs with semantic HTTP methods
+    - **Event-driven architecture**: Real-time notifications via WebSocket
+    - **Comprehensive authentication**: JWT, API keys, OAuth2, RBAC
+    - **Rate limiting**: Tier-based limits with intelligent throttling
+    - **Developer-friendly**: Interactive documentation and SDK generation
+    
+    ## Authentication
+    Multiple authentication methods are supported:
+    - **API Key**: Simple key-based authentication for server-to-server
+    - **JWT**: JSON Web Tokens for stateless authentication
+    - **OAuth2**: Full OAuth2 flow with external provider integration
+    - **RBAC**: Role-based access control for fine-grained permissions
+    
+    ## Rate Limiting
+    API requests are rate-limited based on authentication tier:
+    - **Free tier**: 1,000 requests/hour
+    - **Pro tier**: 10,000 requests/hour  
+    - **Enterprise tier**: 100,000 requests/hour
+    
+    ## Versioning
+    API versioning follows semantic versioning with URL-based versioning:
+    - Current version: `v1`
+    - Backward compatibility maintained for 2 major versions
+    - Deprecation notices provided 6 months in advance
+    
+  version: "1.0.0"
+  contact:
+    name: Semantest API Support
+    url: https://docs.semantest.com
+    email: api-support@semantest.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://api.semantest.com/v1
+    description: Production server
+  - url: https://api-staging.semantest.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Local development server
+
+# Security Schemes
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+  - OAuth2: []
+
+# Common Path Parameters
+paths:
+  # Health and System
+  /health:
+    $ref: "./paths/system.yaml#/health"
+  /metrics:
+    $ref: "./paths/system.yaml#/metrics"
+  /version:
+    $ref: "./paths/system.yaml#/version"
+  
+  # Authentication
+  /auth/login:
+    $ref: "./paths/auth.yaml#/login"
+  /auth/logout:
+    $ref: "./paths/auth.yaml#/logout"
+  /auth/refresh:
+    $ref: "./paths/auth.yaml#/refresh"
+  /auth/profile:
+    $ref: "./paths/auth.yaml#/profile"
+  
+  # Video Domain (YouTube)
+  /videos:
+    $ref: "./paths/videos.yaml#/videos"
+  /videos/{videoId}:
+    $ref: "./paths/videos.yaml#/videos_by_id"
+  /videos/{videoId}/download:
+    $ref: "./paths/videos.yaml#/videos_download"
+  /videos/{videoId}/metadata:
+    $ref: "./paths/videos.yaml#/videos_metadata"
+  /videos/search:
+    $ref: "./paths/videos.yaml#/videos_search"
+  /videos/batch:
+    $ref: "./paths/videos.yaml#/videos_batch"
+  
+  # Playlists
+  /playlists:
+    $ref: "./paths/playlists.yaml#/playlists"
+  /playlists/{playlistId}:
+    $ref: "./paths/playlists.yaml#/playlists_by_id"
+  /playlists/{playlistId}/videos:
+    $ref: "./paths/playlists.yaml#/playlists_videos"
+  /playlists/{playlistId}/sync:
+    $ref: "./paths/playlists.yaml#/playlists_sync"
+  
+  # Channels
+  /channels:
+    $ref: "./paths/channels.yaml#/channels"
+  /channels/{channelId}:
+    $ref: "./paths/channels.yaml#/channels_by_id"
+  /channels/{channelId}/videos:
+    $ref: "./paths/channels.yaml#/channels_videos"
+  /channels/{channelId}/playlists:
+    $ref: "./paths/channels.yaml#/channels_playlists"
+  
+  # Instagram Domain
+  /instagram/posts:
+    $ref: "./paths/instagram.yaml#/posts"
+  /instagram/posts/{postId}:
+    $ref: "./paths/instagram.yaml#/posts_by_id"
+  /instagram/posts/{postId}/download:
+    $ref: "./paths/instagram.yaml#/posts_download"
+  /instagram/stories:
+    $ref: "./paths/instagram.yaml#/stories"
+  /instagram/stories/{storyId}:
+    $ref: "./paths/instagram.yaml#/stories_by_id"
+  /instagram/reels:
+    $ref: "./paths/instagram.yaml#/reels"
+  /instagram/reels/{reelId}:
+    $ref: "./paths/instagram.yaml#/reels_by_id"
+  /instagram/users/{userId}:
+    $ref: "./paths/instagram.yaml#/users_by_id"
+  
+  # Twitter Domain
+  /twitter/tweets:
+    $ref: "./paths/twitter.yaml#/tweets"
+  /twitter/tweets/{tweetId}:
+    $ref: "./paths/twitter.yaml#/tweets_by_id"
+  /twitter/tweets/{tweetId}/like:
+    $ref: "./paths/twitter.yaml#/tweets_like"
+  /twitter/tweets/{tweetId}/retweet:
+    $ref: "./paths/twitter.yaml#/tweets_retweet"
+  /twitter/threads:
+    $ref: "./paths/twitter.yaml#/threads"
+  /twitter/threads/{threadId}:
+    $ref: "./paths/twitter.yaml#/threads_by_id"
+  /twitter/users/{userId}:
+    $ref: "./paths/twitter.yaml#/users_by_id"
+  
+  # Pinterest Domain
+  /pinterest/pins:
+    $ref: "./paths/pinterest.yaml#/pins"
+  /pinterest/pins/{pinId}:
+    $ref: "./paths/pinterest.yaml#/pins_by_id"
+  /pinterest/pins/{pinId}/download:
+    $ref: "./paths/pinterest.yaml#/pins_download"
+  /pinterest/boards:
+    $ref: "./paths/pinterest.yaml#/boards"
+  /pinterest/boards/{boardId}:
+    $ref: "./paths/pinterest.yaml#/boards_by_id"
+  /pinterest/boards/{boardId}/pins:
+    $ref: "./paths/pinterest.yaml#/boards_pins"
+  
+  # Unsplash Domain
+  /unsplash/photos:
+    $ref: "./paths/unsplash.yaml#/photos"
+  /unsplash/photos/{photoId}:
+    $ref: "./paths/unsplash.yaml#/photos_by_id"
+  /unsplash/photos/{photoId}/download:
+    $ref: "./paths/unsplash.yaml#/photos_download"
+  /unsplash/collections:
+    $ref: "./paths/unsplash.yaml#/collections"
+  /unsplash/collections/{collectionId}:
+    $ref: "./paths/unsplash.yaml#/collections_by_id"
+  /unsplash/artists/{artistId}:
+    $ref: "./paths/unsplash.yaml#/artists_by_id"
+  
+  # Events and WebSocket
+  /events:
+    $ref: "./paths/events.yaml#/events"
+  /events/{eventId}:
+    $ref: "./paths/events.yaml#/events_by_id"
+  /events/stream:
+    $ref: "./paths/events.yaml#/events_stream"
+  
+  # Downloads and Files
+  /downloads:
+    $ref: "./paths/downloads.yaml#/downloads"
+  /downloads/{downloadId}:
+    $ref: "./paths/downloads.yaml#/downloads_by_id"
+  /downloads/{downloadId}/cancel:
+    $ref: "./paths/downloads.yaml#/downloads_cancel"
+  /downloads/cleanup:
+    $ref: "./paths/downloads.yaml#/downloads_cleanup"
+  
+  # Batch Operations
+  /batch/operations:
+    $ref: "./paths/batch.yaml#/operations"
+  /batch/operations/{operationId}:
+    $ref: "./paths/batch.yaml#/operations_by_id"
+  /batch/operations/{operationId}/cancel:
+    $ref: "./paths/batch.yaml#/operations_cancel"
+
+# Reusable Components
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token authentication
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.semantest.com/oauth/authorize
+          tokenUrl: https://api.semantest.com/oauth/token
+          scopes:
+            read: Read access to resources
+            write: Write access to resources
+            admin: Administrative access
+            videos:read: Read video resources
+            videos:write: Write video resources
+            instagram:read: Read Instagram resources
+            instagram:write: Write Instagram resources
+            twitter:read: Read Twitter resources
+            twitter:write: Write Twitter resources
+            pinterest:read: Read Pinterest resources
+            pinterest:write: Write Pinterest resources
+            unsplash:read: Read Unsplash resources
+            unsplash:write: Write Unsplash resources
+  
+  schemas:
+    # Common Schemas
+    Error:
+      $ref: "./schemas/common.yaml#/Error"
+    ValidationError:
+      $ref: "./schemas/common.yaml#/ValidationError"
+    PaginationInfo:
+      $ref: "./schemas/common.yaml#/PaginationInfo"
+    PaginatedResponse:
+      $ref: "./schemas/common.yaml#/PaginatedResponse"
+    
+    # Domain Event Schema
+    DomainEvent:
+      $ref: "./schemas/common.yaml#/DomainEvent"
+    
+    # Authentication Schemas
+    LoginRequest:
+      $ref: "./schemas/auth.yaml#/LoginRequest"
+    LoginResponse:
+      $ref: "./schemas/auth.yaml#/LoginResponse"
+    RefreshRequest:
+      $ref: "./schemas/auth.yaml#/RefreshRequest"
+    UserProfile:
+      $ref: "./schemas/auth.yaml#/UserProfile"
+    
+    # Video Domain Schemas
+    Video:
+      $ref: "./schemas/videos.yaml#/Video"
+    VideoMetadata:
+      $ref: "./schemas/videos.yaml#/VideoMetadata"
+    VideoQuality:
+      $ref: "./schemas/videos.yaml#/VideoQuality"
+    Playlist:
+      $ref: "./schemas/playlists.yaml#/Playlist"
+    Channel:
+      $ref: "./schemas/channels.yaml#/Channel"
+    
+    # Instagram Domain Schemas
+    InstagramPost:
+      $ref: "./schemas/instagram.yaml#/Post"
+    InstagramStory:
+      $ref: "./schemas/instagram.yaml#/Story"
+    InstagramReel:
+      $ref: "./schemas/instagram.yaml#/Reel"
+    InstagramUser:
+      $ref: "./schemas/instagram.yaml#/User"
+    
+    # Twitter Domain Schemas
+    Tweet:
+      $ref: "./schemas/twitter.yaml#/Tweet"
+    Thread:
+      $ref: "./schemas/twitter.yaml#/Thread"
+    TwitterUser:
+      $ref: "./schemas/twitter.yaml#/User"
+    Engagement:
+      $ref: "./schemas/twitter.yaml#/Engagement"
+    
+    # Pinterest Domain Schemas
+    Pin:
+      $ref: "./schemas/pinterest.yaml#/Pin"
+    Board:
+      $ref: "./schemas/pinterest.yaml#/Board"
+    PinterestUser:
+      $ref: "./schemas/pinterest.yaml#/User"
+    
+    # Unsplash Domain Schemas
+    Photo:
+      $ref: "./schemas/unsplash.yaml#/Photo"
+    Collection:
+      $ref: "./schemas/unsplash.yaml#/Collection"
+    Artist:
+      $ref: "./schemas/unsplash.yaml#/Artist"
+    License:
+      $ref: "./schemas/unsplash.yaml#/License"
+    
+    # Download Schemas
+    Download:
+      $ref: "./schemas/downloads.yaml#/Download"
+    DownloadRequest:
+      $ref: "./schemas/downloads.yaml#/DownloadRequest"
+    DownloadStatus:
+      $ref: "./schemas/downloads.yaml#/DownloadStatus"
+    
+    # Batch Operation Schemas
+    BatchOperation:
+      $ref: "./schemas/batch.yaml#/BatchOperation"
+    BatchOperationRequest:
+      $ref: "./schemas/batch.yaml#/BatchOperationRequest"
+    BatchOperationStatus:
+      $ref: "./schemas/batch.yaml#/BatchOperationStatus"
+  
+  parameters:
+    # Common Parameters
+    PageParam:
+      $ref: "./parameters/common.yaml#/PageParam"
+    PageSizeParam:
+      $ref: "./parameters/common.yaml#/PageSizeParam"
+    SortByParam:
+      $ref: "./parameters/common.yaml#/SortByParam"
+    SortOrderParam:
+      $ref: "./parameters/common.yaml#/SortOrderParam"
+    
+    # Domain Parameters
+    VideoIdParam:
+      $ref: "./parameters/videos.yaml#/VideoIdParam"
+    PlaylistIdParam:
+      $ref: "./parameters/playlists.yaml#/PlaylistIdParam"
+    ChannelIdParam:
+      $ref: "./parameters/channels.yaml#/ChannelIdParam"
+    
+    # Instagram Parameters
+    PostIdParam:
+      $ref: "./parameters/instagram.yaml#/PostIdParam"
+    StoryIdParam:
+      $ref: "./parameters/instagram.yaml#/StoryIdParam"
+    ReelIdParam:
+      $ref: "./parameters/instagram.yaml#/ReelIdParam"
+    
+    # Twitter Parameters
+    TweetIdParam:
+      $ref: "./parameters/twitter.yaml#/TweetIdParam"
+    ThreadIdParam:
+      $ref: "./parameters/twitter.yaml#/ThreadIdParam"
+    
+    # Pinterest Parameters
+    PinIdParam:
+      $ref: "./parameters/pinterest.yaml#/PinIdParam"
+    BoardIdParam:
+      $ref: "./parameters/pinterest.yaml#/BoardIdParam"
+    
+    # Unsplash Parameters
+    PhotoIdParam:
+      $ref: "./parameters/unsplash.yaml#/PhotoIdParam"
+    CollectionIdParam:
+      $ref: "./parameters/unsplash.yaml#/CollectionIdParam"
+    ArtistIdParam:
+      $ref: "./parameters/unsplash.yaml#/ArtistIdParam"
+  
+  responses:
+    # Common Responses
+    BadRequest:
+      $ref: "./responses/common.yaml#/BadRequest"
+    Unauthorized:
+      $ref: "./responses/common.yaml#/Unauthorized"
+    Forbidden:
+      $ref: "./responses/common.yaml#/Forbidden"
+    NotFound:
+      $ref: "./responses/common.yaml#/NotFound"
+    ValidationError:
+      $ref: "./responses/common.yaml#/ValidationError"
+    RateLimited:
+      $ref: "./responses/common.yaml#/RateLimited"
+    InternalServerError:
+      $ref: "./responses/common.yaml#/InternalServerError"
+  
+  examples:
+    # Video Examples
+    VideoExample:
+      $ref: "./examples/videos.yaml#/VideoExample"
+    PlaylistExample:
+      $ref: "./examples/playlists.yaml#/PlaylistExample"
+    
+    # Instagram Examples
+    InstagramPostExample:
+      $ref: "./examples/instagram.yaml#/PostExample"
+    InstagramStoryExample:
+      $ref: "./examples/instagram.yaml#/StoryExample"
+    
+    # Twitter Examples
+    TweetExample:
+      $ref: "./examples/twitter.yaml#/TweetExample"
+    ThreadExample:
+      $ref: "./examples/twitter.yaml#/ThreadExample"
+    
+    # Pinterest Examples
+    PinExample:
+      $ref: "./examples/pinterest.yaml#/PinExample"
+    BoardExample:
+      $ref: "./examples/pinterest.yaml#/BoardExample"
+    
+    # Unsplash Examples
+    PhotoExample:
+      $ref: "./examples/unsplash.yaml#/PhotoExample"
+    CollectionExample:
+      $ref: "./examples/unsplash.yaml#/CollectionExample"
+
+# API Tags for Organization
+tags:
+  - name: System
+    description: System health, metrics, and version information
+  - name: Authentication
+    description: Authentication and authorization endpoints
+  - name: Videos
+    description: Video content management (YouTube)
+  - name: Playlists
+    description: Playlist management and synchronization
+  - name: Channels
+    description: Channel information and content
+  - name: Instagram
+    description: Instagram content management
+  - name: Twitter
+    description: Twitter content management
+  - name: Pinterest
+    description: Pinterest content management
+  - name: Unsplash
+    description: Unsplash photo management
+  - name: Events
+    description: Event streaming and notifications
+  - name: Downloads
+    description: Download management and file operations
+  - name: Batch
+    description: Batch operations and bulk processing
+
+# External Documentation
+externalDocs:
+  description: Full API Documentation
+  url: https://docs.semantest.com/api

@@ -1,0 +1,1011 @@
+# Unsplash Domain Schemas
+
+Photo:
+  type: object
+  required:
+    - id
+    - title
+    - urls
+    - artistId
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique photo identifier
+      example: "photo_abc123def456"
+    title:
+      type: string
+      description: Photo title
+      example: "Beautiful Mountain Landscape"
+    description:
+      type: string
+      description: Photo description
+      example: "A stunning mountain landscape during golden hour"
+    altText:
+      type: string
+      description: Alternative text for accessibility
+      example: "Mountain peak with golden sunlight"
+    urls:
+      $ref: "#/PhotoUrls"
+    artistId:
+      type: string
+      description: Artist/photographer ID
+      example: "artist_def456ghi789"
+    artist:
+      $ref: "#/Artist"
+    width:
+      type: integer
+      description: Photo width in pixels
+      example: 4000
+    height:
+      type: integer
+      description: Photo height in pixels
+      example: 3000
+    aspectRatio:
+      type: number
+      description: Photo aspect ratio
+      example: 1.333
+    color:
+      type: string
+      description: Dominant color of the photo
+      example: "#FFA500"
+    blurHash:
+      type: string
+      description: BlurHash string for progressive loading
+      example: "LGF5]+Yk^6#M@-5c,1J5@[or[Q6."
+    createdAt:
+      type: string
+      format: date-time
+      description: When the photo was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the photo was last updated
+      example: "2024-01-15T10:30:00Z"
+    publishedAt:
+      type: string
+      format: date-time
+      description: When the photo was published
+      example: "2024-01-15T10:30:00Z"
+    license:
+      $ref: "#/License"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Photo tags
+      example: ["mountain", "landscape", "nature", "golden-hour"]
+    location:
+      $ref: "#/PhotoLocation"
+    exifData:
+      $ref: "#/ExifData"
+    downloads:
+      type: integer
+      description: Number of downloads
+      example: 1250
+    views:
+      type: integer
+      description: Number of views
+      example: 15000
+    likes:
+      type: integer
+      description: Number of likes
+      example: 420
+    isLiked:
+      type: boolean
+      description: Whether the current user liked the photo
+      example: false
+    collections:
+      type: array
+      items:
+        $ref: "#/Collection"
+      description: Collections containing this photo
+    relatedPhotos:
+      type: array
+      items:
+        $ref: "#/Photo"
+      description: Related photos
+    sponsorship:
+      type: object
+      properties:
+        sponsor:
+          $ref: "#/Artist"
+        tagline:
+          type: string
+        url:
+          type: string
+          format: uri
+      description: Sponsorship information
+    isSponsored:
+      type: boolean
+      description: Whether the photo is sponsored
+      example: false
+    isFeatured:
+      type: boolean
+      description: Whether the photo is featured
+      example: false
+    isUnsplashPlus:
+      type: boolean
+      description: Whether the photo is Unsplash Plus
+      example: false
+    categories:
+      type: array
+      items:
+        type: string
+      description: Photo categories
+      example: ["nature", "landscapes"]
+    currentUserCollections:
+      type: array
+      items:
+        $ref: "#/Collection"
+      description: Collections the current user has added this photo to
+    statistics:
+      $ref: "#/PhotoStatistics"
+    metadata:
+      type: object
+      description: Additional photo metadata
+      additionalProperties: true
+
+PhotoUrls:
+  type: object
+  required:
+    - raw
+    - full
+    - regular
+    - small
+    - thumb
+  properties:
+    raw:
+      type: string
+      format: uri
+      description: Raw photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?raw=true"
+    full:
+      type: string
+      format: uri
+      description: Full size photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?w=2048"
+    regular:
+      type: string
+      format: uri
+      description: Regular size photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?w=1080"
+    small:
+      type: string
+      format: uri
+      description: Small size photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?w=400"
+    thumb:
+      type: string
+      format: uri
+      description: Thumbnail photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?w=200"
+    smallS3:
+      type: string
+      format: uri
+      description: Small S3 photo URL
+      example: "https://unsplash.s3.amazonaws.com/photo-abc123def456-small.jpg"
+    custom:
+      type: string
+      format: uri
+      description: Custom size photo URL
+      example: "https://images.unsplash.com/photo-abc123def456?w=800&h=600"
+
+Artist:
+  type: object
+  required:
+    - id
+    - username
+    - name
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique artist identifier
+      example: "artist_abc123def456"
+    username:
+      type: string
+      description: Artist username
+      example: "john_photographer"
+    name:
+      type: string
+      description: Artist display name
+      example: "John Smith"
+    firstName:
+      type: string
+      description: Artist first name
+      example: "John"
+    lastName:
+      type: string
+      description: Artist last name
+      example: "Smith"
+    bio:
+      type: string
+      description: Artist bio
+      example: "Professional landscape photographer based in Colorado"
+    location:
+      type: string
+      description: Artist location
+      example: "Denver, Colorado"
+    profileImageUrl:
+      type: string
+      format: uri
+      description: Profile image URL
+      example: "https://images.unsplash.com/profile-abc123def456.jpg"
+    portfolioUrl:
+      type: string
+      format: uri
+      description: Portfolio URL
+      example: "https://johnsmith.photography"
+    instagramUsername:
+      type: string
+      description: Instagram username
+      example: "john_photographer"
+    twitterUsername:
+      type: string
+      description: Twitter username
+      example: "johnphoto"
+    websiteUrl:
+      type: string
+      format: uri
+      description: Website URL
+      example: "https://johnsmith.com"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the artist joined
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the artist profile was last updated
+      example: "2024-01-15T10:30:00Z"
+    totalPhotos:
+      type: integer
+      description: Total number of photos
+      example: 150
+    totalCollections:
+      type: integer
+      description: Total number of collections created
+      example: 12
+    totalLikes:
+      type: integer
+      description: Total likes received
+      example: 5420
+    totalViews:
+      type: integer
+      description: Total views received
+      example: 125000
+    totalDownloads:
+      type: integer
+      description: Total downloads
+      example: 8750
+    followersCount:
+      type: integer
+      description: Number of followers
+      example: 2300
+    followingCount:
+      type: integer
+      description: Number of users following
+      example: 180
+    isFollowing:
+      type: boolean
+      description: Whether the current user is following this artist
+      example: false
+    isFollowedBy:
+      type: boolean
+      description: Whether this artist is following the current user
+      example: false
+    isHirable:
+      type: boolean
+      description: Whether the artist is available for hire
+      example: true
+    isUnsplashPlus:
+      type: boolean
+      description: Whether the artist is Unsplash Plus
+      example: false
+    uploadedPhotos:
+      type: array
+      items:
+        $ref: "#/Photo"
+      description: Photos uploaded by the artist
+    likedPhotos:
+      type: array
+      items:
+        $ref: "#/Photo"
+      description: Photos liked by the artist
+    collections:
+      type: array
+      items:
+        $ref: "#/Collection"
+      description: Collections created by the artist
+    statistics:
+      $ref: "#/ArtistStatistics"
+    metadata:
+      type: object
+      description: Additional artist metadata
+      additionalProperties: true
+
+Collection:
+  type: object
+  required:
+    - id
+    - title
+    - curatorId
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique collection identifier
+      example: "collection_abc123def456"
+    title:
+      type: string
+      description: Collection title
+      example: "Mountain Landscapes"
+    description:
+      type: string
+      description: Collection description
+      example: "A curated collection of stunning mountain landscapes"
+    curatorId:
+      type: string
+      description: Curator (creator) ID
+      example: "artist_def456ghi789"
+    curator:
+      $ref: "#/Artist"
+    coverPhoto:
+      $ref: "#/Photo"
+    previewPhotos:
+      type: array
+      items:
+        $ref: "#/Photo"
+      description: Preview photos for the collection
+    createdAt:
+      type: string
+      format: date-time
+      description: When the collection was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the collection was last updated
+      example: "2024-01-15T10:30:00Z"
+    publishedAt:
+      type: string
+      format: date-time
+      description: When the collection was published
+      example: "2024-01-15T10:30:00Z"
+    totalPhotos:
+      type: integer
+      description: Total number of photos in the collection
+      example: 45
+    photosCount:
+      type: integer
+      description: Number of photos (alias for totalPhotos)
+      example: 45
+    isPrivate:
+      type: boolean
+      description: Whether the collection is private
+      example: false
+    isFeatured:
+      type: boolean
+      description: Whether the collection is featured
+      example: false
+    isCurated:
+      type: boolean
+      description: Whether the collection is curated
+      example: true
+    tags:
+      type: array
+      items:
+        type: string
+      description: Collection tags
+      example: ["mountain", "landscape", "nature"]
+    photos:
+      type: array
+      items:
+        $ref: "#/Photo"
+      description: Photos in the collection
+    relatedCollections:
+      type: array
+      items:
+        $ref: "#/Collection"
+      description: Related collections
+    shareUrl:
+      type: string
+      format: uri
+      description: Shareable URL for the collection
+      example: "https://unsplash.com/collections/abc123def456/mountain-landscapes"
+    links:
+      type: object
+      properties:
+        self:
+          type: string
+          format: uri
+        html:
+          type: string
+          format: uri
+        download:
+          type: string
+          format: uri
+        related:
+          type: string
+          format: uri
+      description: Collection links
+    metadata:
+      type: object
+      description: Additional collection metadata
+      additionalProperties: true
+
+License:
+  type: object
+  required:
+    - type
+    - name
+    - url
+  properties:
+    type:
+      type: string
+      enum: ["unsplash", "unsplash-plus", "creative-commons", "custom"]
+      description: License type
+      example: "unsplash"
+    name:
+      type: string
+      description: License name
+      example: "Unsplash License"
+    url:
+      type: string
+      format: uri
+      description: License URL
+      example: "https://unsplash.com/license"
+    description:
+      type: string
+      description: License description
+      example: "Free to use for any purpose"
+    commercialUse:
+      type: boolean
+      description: Whether commercial use is allowed
+      example: true
+    modification:
+      type: boolean
+      description: Whether modification is allowed
+      example: true
+    attribution:
+      type: boolean
+      description: Whether attribution is required
+      example: false
+    resale:
+      type: boolean
+      description: Whether resale is allowed
+      example: false
+    requirements:
+      type: array
+      items:
+        type: string
+      description: License requirements
+      example: ["Photo by John Smith on Unsplash"]
+    restrictions:
+      type: array
+      items:
+        type: string
+      description: License restrictions
+      example: ["Cannot be sold as a standalone product"]
+
+PhotoLocation:
+  type: object
+  properties:
+    name:
+      type: string
+      description: Location name
+      example: "Rocky Mountain National Park"
+    city:
+      type: string
+      description: City name
+      example: "Estes Park"
+    country:
+      type: string
+      description: Country name
+      example: "United States"
+    coordinates:
+      type: object
+      properties:
+        latitude:
+          type: number
+          description: Latitude
+          example: 40.3428
+        longitude:
+          type: number
+          description: Longitude
+          example: -105.6836
+      description: GPS coordinates
+    title:
+      type: string
+      description: Location title
+      example: "Rocky Mountain National Park, Colorado"
+
+ExifData:
+  type: object
+  properties:
+    make:
+      type: string
+      description: Camera make
+      example: "Canon"
+    model:
+      type: string
+      description: Camera model
+      example: "EOS 5D Mark IV"
+    exposureTime:
+      type: string
+      description: Exposure time
+      example: "1/125"
+    aperture:
+      type: string
+      description: Aperture
+      example: "f/8.0"
+    focalLength:
+      type: string
+      description: Focal length
+      example: "85mm"
+    iso:
+      type: integer
+      description: ISO value
+      example: 200
+    whiteBalance:
+      type: string
+      description: White balance
+      example: "daylight"
+    flash:
+      type: string
+      description: Flash setting
+      example: "no flash"
+    orientation:
+      type: integer
+      description: Image orientation
+      example: 1
+    software:
+      type: string
+      description: Software used
+      example: "Adobe Lightroom"
+    dateTime:
+      type: string
+      format: date-time
+      description: When the photo was taken
+      example: "2024-01-15T10:30:00Z"
+    gpsLatitude:
+      type: number
+      description: GPS latitude
+      example: 40.3428
+    gpsLongitude:
+      type: number
+      description: GPS longitude
+      example: -105.6836
+    gpsAltitude:
+      type: number
+      description: GPS altitude in meters
+      example: 2500
+
+PhotoStatistics:
+  type: object
+  properties:
+    downloads:
+      type: integer
+      description: Total downloads
+      example: 1250
+    views:
+      type: integer
+      description: Total views
+      example: 15000
+    likes:
+      type: integer
+      description: Total likes
+      example: 420
+    shares:
+      type: integer
+      description: Total shares
+      example: 67
+    downloadHistory:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date
+          downloads:
+            type: integer
+      description: Download history by date
+    viewHistory:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date
+          views:
+            type: integer
+      description: View history by date
+    likeHistory:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            format: date
+          likes:
+            type: integer
+      description: Like history by date
+    topCountries:
+      type: array
+      items:
+        type: object
+        properties:
+          country:
+            type: string
+          downloads:
+            type: integer
+          views:
+            type: integer
+      description: Top countries by engagement
+    topReferrers:
+      type: array
+      items:
+        type: object
+        properties:
+          referrer:
+            type: string
+          downloads:
+            type: integer
+          views:
+            type: integer
+      description: Top referrers
+
+ArtistStatistics:
+  type: object
+  properties:
+    totalDownloads:
+      type: integer
+      description: Total downloads across all photos
+      example: 8750
+    totalViews:
+      type: integer
+      description: Total views across all photos
+      example: 125000
+    totalLikes:
+      type: integer
+      description: Total likes across all photos
+      example: 5420
+    totalShares:
+      type: integer
+      description: Total shares across all photos
+      example: 890
+    monthlyDownloads:
+      type: integer
+      description: Downloads this month
+      example: 450
+    monthlyViews:
+      type: integer
+      description: Views this month
+      example: 8500
+    monthlyLikes:
+      type: integer
+      description: Likes this month
+      example: 180
+    downloadTrend:
+      type: string
+      enum: ["increasing", "decreasing", "stable"]
+      description: Download trend
+      example: "increasing"
+    viewTrend:
+      type: string
+      enum: ["increasing", "decreasing", "stable"]
+      description: View trend
+      example: "increasing"
+    likeTrend:
+      type: string
+      enum: ["increasing", "decreasing", "stable"]
+      description: Like trend
+      example: "stable"
+    topPhotos:
+      type: array
+      items:
+        type: object
+        properties:
+          photoId:
+            type: string
+          title:
+            type: string
+          downloads:
+            type: integer
+          views:
+            type: integer
+          likes:
+            type: integer
+      description: Top performing photos
+    topCountries:
+      type: array
+      items:
+        type: object
+        properties:
+          country:
+            type: string
+          downloads:
+            type: integer
+          views:
+            type: integer
+      description: Top countries by engagement
+    topReferrers:
+      type: array
+      items:
+        type: object
+        properties:
+          referrer:
+            type: string
+          downloads:
+            type: integer
+          views:
+            type: integer
+      description: Top referrers
+
+# Request/Response Objects
+
+PhotoSearchRequest:
+  type: object
+  properties:
+    query:
+      type: string
+      description: Search query
+      example: "mountain landscape"
+    category:
+      type: string
+      description: Photo category
+      example: "nature"
+    color:
+      type: string
+      description: Color filter
+      example: "green"
+    orientation:
+      type: string
+      enum: ["landscape", "portrait", "square"]
+      description: Photo orientation
+      example: "landscape"
+    size:
+      type: string
+      enum: ["small", "medium", "large"]
+      description: Photo size
+      example: "large"
+    featured:
+      type: boolean
+      description: Show only featured photos
+      example: false
+    curated:
+      type: boolean
+      description: Show only curated photos
+      example: false
+    orderBy:
+      type: string
+      enum: ["latest", "oldest", "popular", "views", "downloads"]
+      description: Sort order
+      example: "popular"
+    collections:
+      type: array
+      items:
+        type: string
+      description: Collection IDs to search within
+      example: ["collection_abc123def456"]
+    contentFilter:
+      type: string
+      enum: ["low", "high"]
+      description: Content filter level
+      example: "low"
+    page:
+      type: integer
+      minimum: 1
+      description: Page number
+      example: 1
+    perPage:
+      type: integer
+      minimum: 1
+      maximum: 30
+      description: Number of results per page
+      example: 10
+
+CreateCollectionRequest:
+  type: object
+  required:
+    - title
+  properties:
+    title:
+      type: string
+      description: Collection title
+      example: "Mountain Landscapes"
+    description:
+      type: string
+      description: Collection description
+      example: "A curated collection of stunning mountain landscapes"
+    private:
+      type: boolean
+      description: Whether the collection is private
+      example: false
+    tags:
+      type: array
+      items:
+        type: string
+      description: Collection tags
+      example: ["mountain", "landscape", "nature"]
+
+UpdateCollectionRequest:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Updated collection title
+      example: "Updated Mountain Landscapes"
+    description:
+      type: string
+      description: Updated collection description
+      example: "An updated collection of stunning mountain landscapes"
+    private:
+      type: boolean
+      description: Updated privacy setting
+      example: false
+    tags:
+      type: array
+      items:
+        type: string
+      description: Updated collection tags
+      example: ["mountain", "landscape", "nature", "photography"]
+
+AddPhotoToCollectionRequest:
+  type: object
+  required:
+    - photoId
+  properties:
+    photoId:
+      type: string
+      description: Photo ID to add to collection
+      example: "photo_abc123def456"
+    note:
+      type: string
+      description: Optional note about the photo
+      example: "Beautiful composition and lighting"
+
+PhotoDownloadRequest:
+  type: object
+  properties:
+    size:
+      type: string
+      enum: ["raw", "full", "regular", "small", "thumb"]
+      description: Photo size to download
+      example: "full"
+    format:
+      type: string
+      enum: ["jpg", "png", "webp"]
+      description: Photo format
+      example: "jpg"
+    quality:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: Photo quality (1-100)
+      example: 90
+    width:
+      type: integer
+      description: Custom width
+      example: 1920
+    height:
+      type: integer
+      description: Custom height
+      example: 1080
+    crop:
+      type: string
+      enum: ["center", "top", "bottom", "left", "right", "faces", "entropy"]
+      description: Crop mode
+      example: "center"
+    attribution:
+      type: boolean
+      description: Include attribution metadata
+      example: true
+
+PhotoAnalytics:
+  type: object
+  properties:
+    photoId:
+      type: string
+      description: Photo ID
+      example: "photo_abc123def456"
+    timeframe:
+      type: string
+      enum: ["day", "week", "month", "quarter", "year", "all"]
+      description: Analytics timeframe
+      example: "month"
+    metrics:
+      $ref: "#/PhotoStatistics"
+    generatedAt:
+      type: string
+      format: date-time
+      description: When the analytics were generated
+      example: "2024-01-15T10:30:00Z"
+
+CollectionAnalytics:
+  type: object
+  properties:
+    collectionId:
+      type: string
+      description: Collection ID
+      example: "collection_abc123def456"
+    timeframe:
+      type: string
+      enum: ["day", "week", "month", "quarter", "year", "all"]
+      description: Analytics timeframe
+      example: "month"
+    metrics:
+      type: object
+      properties:
+        totalDownloads:
+          type: integer
+          description: Total downloads
+          example: 5420
+        totalViews:
+          type: integer
+          description: Total views
+          example: 45000
+        totalLikes:
+          type: integer
+          description: Total likes
+          example: 1250
+        averageDownloadsPerPhoto:
+          type: number
+          description: Average downloads per photo
+          example: 120.4
+        averageViewsPerPhoto:
+          type: number
+          description: Average views per photo
+          example: 1000.0
+        averageLikesPerPhoto:
+          type: number
+          description: Average likes per photo
+          example: 27.8
+        topPerformingPhotos:
+          type: array
+          items:
+            type: object
+            properties:
+              photoId:
+                type: string
+              title:
+                type: string
+              downloads:
+                type: integer
+              views:
+                type: integer
+              likes:
+                type: integer
+        topCountries:
+          type: array
+          items:
+            type: object
+            properties:
+              country:
+                type: string
+              downloads:
+                type: integer
+              views:
+                type: integer
+        topReferrers:
+          type: array
+          items:
+            type: object
+            properties:
+              referrer:
+                type: string
+              downloads:
+                type: integer
+              views:
+                type: integer
+    generatedAt:
+      type: string
+      format: date-time
+      description: When the analytics were generated
+      example: "2024-01-15T10:30:00Z"

@@ -1,0 +1,500 @@
+# Instagram Domain Schemas
+
+Post:
+  type: object
+  required:
+    - id
+    - platformId
+    - authorId
+    - metadata
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique post identifier
+      example: "post_abc123def456"
+    platformId:
+      type: string
+      description: Instagram post ID
+      example: "CyMMYKPlPZ_"
+    authorId:
+      type: string
+      description: ID of the post author
+      example: "user_def456ghi789"
+    metadata:
+      $ref: "#/PostMetadata"
+    mediaUrls:
+      type: array
+      items:
+        type: string
+        format: uri
+      description: URLs of media files in the post
+      example: ["https://instagram.com/p/CyMMYKPlPZ_/media/?size=l"]
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: Post thumbnail URL
+      example: "https://instagram.com/p/CyMMYKPlPZ_/media/?size=t"
+    isDownloaded:
+      type: boolean
+      description: Whether the post has been downloaded
+      example: true
+    downloadedAt:
+      type: string
+      format: date-time
+      description: When the post was downloaded
+      example: "2024-01-15T10:30:00Z"
+    localPath:
+      type: string
+      description: Local file path where post is stored
+      example: "/downloads/instagram/posts/abc123def456/"
+    savedAt:
+      type: string
+      format: date-time
+      description: When the post was saved to the system
+      example: "2024-01-15T10:00:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the post record was created
+      example: "2024-01-15T10:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the post record was last updated
+      example: "2024-01-15T10:30:00Z"
+
+PostMetadata:
+  type: object
+  required:
+    - caption
+    - mediaType
+    - timestamp
+  properties:
+    caption:
+      type: string
+      description: Post caption text
+      example: "Beautiful sunset at the beach! 🌅 #sunset #beach #nature"
+    mediaType:
+      type: string
+      enum: ["image", "video", "carousel"]
+      description: Type of media in the post
+      example: "image"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the post was originally published
+      example: "2024-01-15T08:00:00Z"
+    likeCount:
+      type: integer
+      description: Number of likes
+      example: 1250
+    commentCount:
+      type: integer
+      description: Number of comments
+      example: 87
+    mediaCount:
+      type: integer
+      description: Number of media items in the post
+      example: 1
+    hashtags:
+      type: array
+      items:
+        type: string
+      description: Hashtags used in the post
+      example: ["sunset", "beach", "nature"]
+    mentions:
+      type: array
+      items:
+        type: string
+      description: Users mentioned in the post
+      example: ["@john_doe", "@jane_smith"]
+    location:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Location name
+          example: "Malibu Beach"
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 34.0259
+            longitude:
+              type: number
+              example: -118.7798
+    accessibility:
+      type: string
+      description: Accessibility caption
+      example: "Image may contain: sky, ocean, outdoors, nature"
+
+Story:
+  type: object
+  required:
+    - id
+    - platformId
+    - authorId
+    - metadata
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique story identifier
+      example: "story_abc123def456"
+    platformId:
+      type: string
+      description: Instagram story ID
+      example: "2945786420123456789"
+    authorId:
+      type: string
+      description: ID of the story author
+      example: "user_def456ghi789"
+    metadata:
+      $ref: "#/StoryMetadata"
+    mediaUrl:
+      type: string
+      format: uri
+      description: URL of the story media
+      example: "https://instagram.com/stories/username/2945786420123456789/media/"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: Story thumbnail URL
+      example: "https://instagram.com/stories/username/2945786420123456789/thumbnail/"
+    isDownloaded:
+      type: boolean
+      description: Whether the story has been downloaded
+      example: true
+    downloadedAt:
+      type: string
+      format: date-time
+      description: When the story was downloaded
+      example: "2024-01-15T10:30:00Z"
+    localPath:
+      type: string
+      description: Local file path where story is stored
+      example: "/downloads/instagram/stories/abc123def456.mp4"
+    viewedAt:
+      type: string
+      format: date-time
+      description: When the story was viewed
+      example: "2024-01-15T10:15:00Z"
+    archivedAt:
+      type: string
+      format: date-time
+      description: When the story was archived
+      example: "2024-01-16T08:00:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the story record was created
+      example: "2024-01-15T10:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the story record was last updated
+      example: "2024-01-15T10:30:00Z"
+
+StoryMetadata:
+  type: object
+  required:
+    - mediaType
+    - timestamp
+    - expiresAt
+  properties:
+    mediaType:
+      type: string
+      enum: ["image", "video"]
+      description: Type of media in the story
+      example: "image"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the story was originally published
+      example: "2024-01-15T08:00:00Z"
+    expiresAt:
+      type: string
+      format: date-time
+      description: When the story expires
+      example: "2024-01-16T08:00:00Z"
+    duration:
+      type: number
+      description: Story duration in seconds (for videos)
+      example: 15.0
+    viewCount:
+      type: integer
+      description: Number of views
+      example: 425
+    hasMusic:
+      type: boolean
+      description: Whether the story has music
+      example: true
+    musicInfo:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Good 4 U"
+        artist:
+          type: string
+          example: "Olivia Rodrigo"
+    stickers:
+      type: array
+      items:
+        type: object
+        properties:
+          type:
+            type: string
+            enum: ["location", "hashtag", "mention", "poll", "question"]
+            example: "location"
+          value:
+            type: string
+            example: "Malibu Beach"
+    text:
+      type: string
+      description: Text content in the story
+      example: "Beautiful day at the beach!"
+
+Reel:
+  type: object
+  required:
+    - id
+    - platformId
+    - authorId
+    - metadata
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique reel identifier
+      example: "reel_abc123def456"
+    platformId:
+      type: string
+      description: Instagram reel ID
+      example: "CyMMYKPlPZ_"
+    authorId:
+      type: string
+      description: ID of the reel author
+      example: "user_def456ghi789"
+    metadata:
+      $ref: "#/ReelMetadata"
+    videoUrl:
+      type: string
+      format: uri
+      description: URL of the reel video
+      example: "https://instagram.com/reel/CyMMYKPlPZ_/media/"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: Reel thumbnail URL
+      example: "https://instagram.com/reel/CyMMYKPlPZ_/thumbnail/"
+    isDownloaded:
+      type: boolean
+      description: Whether the reel has been downloaded
+      example: true
+    downloadedAt:
+      type: string
+      format: date-time
+      description: When the reel was downloaded
+      example: "2024-01-15T10:30:00Z"
+    localPath:
+      type: string
+      description: Local file path where reel is stored
+      example: "/downloads/instagram/reels/abc123def456.mp4"
+    savedAt:
+      type: string
+      format: date-time
+      description: When the reel was saved to the system
+      example: "2024-01-15T10:00:00Z"
+    sharedAt:
+      type: string
+      format: date-time
+      description: When the reel was shared
+      example: "2024-01-15T10:15:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the reel record was created
+      example: "2024-01-15T10:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the reel record was last updated
+      example: "2024-01-15T10:30:00Z"
+
+ReelMetadata:
+  type: object
+  required:
+    - caption
+    - duration
+    - timestamp
+  properties:
+    caption:
+      type: string
+      description: Reel caption text
+      example: "Dancing to the beat! 💃 #dance #music #fun"
+    duration:
+      type: number
+      description: Reel duration in seconds
+      example: 30.5
+    timestamp:
+      type: string
+      format: date-time
+      description: When the reel was originally published
+      example: "2024-01-15T08:00:00Z"
+    likeCount:
+      type: integer
+      description: Number of likes
+      example: 2500
+    commentCount:
+      type: integer
+      description: Number of comments
+      example: 150
+    shareCount:
+      type: integer
+      description: Number of shares
+      example: 75
+    viewCount:
+      type: integer
+      description: Number of views
+      example: 15000
+    playCount:
+      type: integer
+      description: Number of plays
+      example: 18000
+    hashtags:
+      type: array
+      items:
+        type: string
+      description: Hashtags used in the reel
+      example: ["dance", "music", "fun"]
+    mentions:
+      type: array
+      items:
+        type: string
+      description: Users mentioned in the reel
+      example: ["@dance_crew", "@music_lover"]
+    musicInfo:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Blinding Lights"
+        artist:
+          type: string
+          example: "The Weeknd"
+        duration:
+          type: number
+          example: 30.0
+    effects:
+      type: array
+      items:
+        type: string
+      description: Effects used in the reel
+      example: ["slow_motion", "color_filter"]
+
+User:
+  type: object
+  required:
+    - id
+    - platformId
+    - username
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique user identifier
+      example: "user_abc123def456"
+    platformId:
+      type: string
+      description: Instagram user ID
+      example: "123456789"
+    username:
+      type: string
+      description: Instagram username
+      example: "john_doe"
+    displayName:
+      type: string
+      description: User display name
+      example: "John Doe"
+    biography:
+      type: string
+      description: User biography
+      example: "Travel enthusiast 📸 | Nature lover 🌿 | Coffee addict ☕"
+    profilePictureUrl:
+      type: string
+      format: uri
+      description: Profile picture URL
+      example: "https://instagram.com/profiles/123456789/profile_picture.jpg"
+    isPrivate:
+      type: boolean
+      description: Whether the account is private
+      example: false
+    isVerified:
+      type: boolean
+      description: Whether the account is verified
+      example: true
+    isBusiness:
+      type: boolean
+      description: Whether the account is a business account
+      example: false
+    followersCount:
+      type: integer
+      description: Number of followers
+      example: 15000
+    followingCount:
+      type: integer
+      description: Number of following
+      example: 1200
+    postsCount:
+      type: integer
+      description: Number of posts
+      example: 850
+    externalUrl:
+      type: string
+      format: uri
+      description: External URL from profile
+      example: "https://johndoe.com"
+    category:
+      type: string
+      description: Business category (if business account)
+      example: "Photographer"
+    contactInfo:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+1234567890"
+        address:
+          type: string
+          example: "Los Angeles, CA"
+    followedAt:
+      type: string
+      format: date-time
+      description: When the user was followed
+      example: "2024-01-15T10:00:00Z"
+    profileUpdatedAt:
+      type: string
+      format: date-time
+      description: When the profile was last updated
+      example: "2024-01-15T10:30:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the user record was created
+      example: "2024-01-15T10:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the user record was last updated
+      example: "2024-01-15T10:30:00Z"

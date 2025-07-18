@@ -1,0 +1,782 @@
+# Download Management Schemas
+
+Download:
+  type: object
+  required:
+    - id
+    - resourceId
+    - resourceType
+    - status
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique download identifier
+      example: "download_abc123def456"
+    resourceId:
+      type: string
+      description: ID of the resource being downloaded
+      example: "video_def456ghi789"
+    resourceType:
+      type: string
+      enum: ["video", "image", "audio", "document", "archive"]
+      description: Type of resource being downloaded
+      example: "video"
+    resourceUrl:
+      type: string
+      format: uri
+      description: Original URL of the resource
+      example: "https://youtube.com/watch?v=abc123def456"
+    userId:
+      type: string
+      description: User ID who initiated the download
+      example: "user_ghi789jkl012"
+    filename:
+      type: string
+      description: Downloaded filename
+      example: "amazing_video.mp4"
+    originalFilename:
+      type: string
+      description: Original filename
+      example: "Amazing Video Title.mp4"
+    fileSize:
+      type: integer
+      description: File size in bytes
+      example: 52428800
+    downloadedBytes:
+      type: integer
+      description: Bytes downloaded so far
+      example: 26214400
+    downloadProgress:
+      type: number
+      description: Download progress percentage (0-100)
+      example: 50.0
+    downloadSpeed:
+      type: number
+      description: Download speed in bytes per second
+      example: 1048576
+    estimatedTimeRemaining:
+      type: integer
+      description: Estimated time remaining in seconds
+      example: 25
+    status:
+      $ref: "#/DownloadStatus"
+    quality:
+      type: string
+      description: Quality setting for the download
+      example: "1080p"
+    format:
+      type: string
+      description: Format of the downloaded file
+      example: "mp4"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the download was created
+      example: "2024-01-15T10:30:00Z"
+    startedAt:
+      type: string
+      format: date-time
+      description: When the download started
+      example: "2024-01-15T10:30:15Z"
+    completedAt:
+      type: string
+      format: date-time
+      description: When the download completed
+      example: "2024-01-15T10:32:30Z"
+    expiresAt:
+      type: string
+      format: date-time
+      description: When the download link expires
+      example: "2024-01-15T11:30:00Z"
+    downloadUrl:
+      type: string
+      format: uri
+      description: URL to download the file
+      example: "https://downloads.semantest.com/download_abc123def456.mp4"
+    thumbnailUrl:
+      type: string
+      format: uri
+      description: URL to the thumbnail
+      example: "https://thumbnails.semantest.com/download_abc123def456_thumb.jpg"
+    metadata:
+      $ref: "#/DownloadMetadata"
+    error:
+      $ref: "#/DownloadError"
+    retryCount:
+      type: integer
+      description: Number of retry attempts
+      example: 0
+    maxRetries:
+      type: integer
+      description: Maximum number of retries allowed
+      example: 3
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Download priority
+      example: "normal"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags associated with the download
+      example: ["tutorial", "programming", "javascript"]
+    notes:
+      type: string
+      description: User notes about the download
+      example: "Great tutorial for learning React"
+    isPublic:
+      type: boolean
+      description: Whether the download is publicly accessible
+      example: false
+    downloadCount:
+      type: integer
+      description: Number of times this download has been accessed
+      example: 1
+    parentDownloadId:
+      type: string
+      description: Parent download ID (for batch downloads)
+      example: "download_parent123"
+    childDownloads:
+      type: array
+      items:
+        $ref: "#/Download"
+      description: Child downloads (for batch downloads)
+
+DownloadStatus:
+  type: string
+  enum: ["pending", "queued", "downloading", "processing", "completed", "failed", "cancelled", "expired"]
+  description: Download status
+  example: "downloading"
+
+DownloadMetadata:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Title of the downloaded content
+      example: "How to Build a React App"
+    description:
+      type: string
+      description: Description of the downloaded content
+      example: "A comprehensive tutorial on building React applications"
+    duration:
+      type: integer
+      description: Duration in seconds (for videos/audio)
+      example: 1800
+    resolution:
+      type: string
+      description: Video resolution
+      example: "1920x1080"
+    fps:
+      type: number
+      description: Frames per second (for videos)
+      example: 30
+    bitrate:
+      type: integer
+      description: Bitrate in bps
+      example: 2000000
+    codec:
+      type: string
+      description: Video/audio codec
+      example: "h264"
+    container:
+      type: string
+      description: Container format
+      example: "mp4"
+    audioChannels:
+      type: integer
+      description: Number of audio channels
+      example: 2
+    audioSampleRate:
+      type: integer
+      description: Audio sample rate in Hz
+      example: 44100
+    subtitles:
+      type: array
+      items:
+        type: object
+        properties:
+          language:
+            type: string
+          url:
+            type: string
+            format: uri
+      description: Available subtitles
+    chapters:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+          startTime:
+            type: integer
+          endTime:
+            type: integer
+      description: Video chapters
+    thumbnail:
+      type: string
+      format: uri
+      description: Thumbnail URL
+      example: "https://thumbnails.semantest.com/video_thumb.jpg"
+    author:
+      type: string
+      description: Content author
+      example: "John Doe"
+    uploader:
+      type: string
+      description: Content uploader
+      example: "TechTutorials"
+    uploadDate:
+      type: string
+      format: date-time
+      description: When the content was uploaded
+      example: "2024-01-10T15:30:00Z"
+    viewCount:
+      type: integer
+      description: View count
+      example: 125000
+    likeCount:
+      type: integer
+      description: Like count
+      example: 2500
+    category:
+      type: string
+      description: Content category
+      example: "Education"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Content tags
+      example: ["react", "javascript", "tutorial"]
+    language:
+      type: string
+      description: Content language
+      example: "en"
+    license:
+      type: string
+      description: Content license
+      example: "Creative Commons"
+
+DownloadError:
+  type: object
+  properties:
+    code:
+      type: string
+      description: Error code
+      example: "DOWNLOAD_FAILED"
+    message:
+      type: string
+      description: Error message
+      example: "Failed to download video: Connection timeout"
+    details:
+      type: string
+      description: Detailed error information
+      example: "Connection timed out after 30 seconds while downloading from https://example.com/video.mp4"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the error occurred
+      example: "2024-01-15T10:31:45Z"
+    retryable:
+      type: boolean
+      description: Whether the error is retryable
+      example: true
+    retryAfter:
+      type: integer
+      description: Seconds to wait before retrying
+      example: 300
+    httpStatus:
+      type: integer
+      description: HTTP status code (if applicable)
+      example: 404
+    originalError:
+      type: string
+      description: Original error message from the source
+      example: "404 Not Found"
+
+DownloadRequest:
+  type: object
+  required:
+    - resourceUrl
+    - resourceType
+  properties:
+    resourceUrl:
+      type: string
+      format: uri
+      description: URL of the resource to download
+      example: "https://youtube.com/watch?v=abc123def456"
+    resourceType:
+      type: string
+      enum: ["video", "image", "audio", "document", "archive"]
+      description: Type of resource to download
+      example: "video"
+    quality:
+      type: string
+      description: Quality preference
+      example: "1080p"
+    format:
+      type: string
+      description: Format preference
+      example: "mp4"
+    filename:
+      type: string
+      description: Custom filename
+      example: "my_video.mp4"
+    extractAudio:
+      type: boolean
+      description: Extract audio only
+      example: false
+    audioFormat:
+      type: string
+      description: Audio format when extracting audio
+      example: "mp3"
+    subtitles:
+      type: boolean
+      description: Download subtitles
+      example: true
+    subtitleLanguages:
+      type: array
+      items:
+        type: string
+      description: Subtitle languages to download
+      example: ["en", "es"]
+    thumbnails:
+      type: boolean
+      description: Download thumbnails
+      example: true
+    metadata:
+      type: boolean
+      description: Extract metadata
+      example: true
+    playlistItems:
+      type: array
+      items:
+        type: string
+      description: Specific playlist items to download
+      example: ["1", "3", "5"]
+    startTime:
+      type: integer
+      description: Start time in seconds (for partial downloads)
+      example: 60
+    endTime:
+      type: integer
+      description: End time in seconds (for partial downloads)
+      example: 300
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Download priority
+      example: "normal"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags to associate with the download
+      example: ["tutorial", "programming"]
+    notes:
+      type: string
+      description: Notes about the download
+      example: "Great tutorial for learning React"
+    notifyOnComplete:
+      type: boolean
+      description: Send notification when download completes
+      example: true
+    webhook:
+      type: string
+      format: uri
+      description: Webhook URL to call when download completes
+      example: "https://myapp.com/webhook/download-complete"
+    callbackData:
+      type: object
+      description: Additional data to include in webhook/callback
+      additionalProperties: true
+
+DownloadProgress:
+  type: object
+  required:
+    - downloadId
+    - progress
+    - status
+  properties:
+    downloadId:
+      type: string
+      description: Download ID
+      example: "download_abc123def456"
+    progress:
+      type: number
+      description: Progress percentage (0-100)
+      example: 75.5
+    status:
+      $ref: "#/DownloadStatus"
+    downloadedBytes:
+      type: integer
+      description: Bytes downloaded
+      example: 39321600
+    totalBytes:
+      type: integer
+      description: Total bytes to download
+      example: 52428800
+    downloadSpeed:
+      type: number
+      description: Current download speed in bytes per second
+      example: 1048576
+    averageSpeed:
+      type: number
+      description: Average download speed in bytes per second
+      example: 987654
+    estimatedTimeRemaining:
+      type: integer
+      description: Estimated time remaining in seconds
+      example: 12
+    elapsedTime:
+      type: integer
+      description: Elapsed time in seconds
+      example: 48
+    currentStage:
+      type: string
+      description: Current processing stage
+      example: "downloading"
+    stageProgress:
+      type: number
+      description: Progress of current stage (0-100)
+      example: 75.5
+    error:
+      $ref: "#/DownloadError"
+    timestamp:
+      type: string
+      format: date-time
+      description: When this progress update was generated
+      example: "2024-01-15T10:31:15Z"
+
+DownloadHistory:
+  type: object
+  properties:
+    downloadId:
+      type: string
+      description: Download ID
+      example: "download_abc123def456"
+    events:
+      type: array
+      items:
+        type: object
+        properties:
+          timestamp:
+            type: string
+            format: date-time
+          event:
+            type: string
+          message:
+            type: string
+          data:
+            type: object
+            additionalProperties: true
+      description: Download events history
+    totalEvents:
+      type: integer
+      description: Total number of events
+      example: 15
+    createdAt:
+      type: string
+      format: date-time
+      description: When the download history was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the download history was last updated
+      example: "2024-01-15T10:32:30Z"
+
+DownloadStats:
+  type: object
+  properties:
+    totalDownloads:
+      type: integer
+      description: Total number of downloads
+      example: 1250
+    activeDownloads:
+      type: integer
+      description: Number of active downloads
+      example: 5
+    completedDownloads:
+      type: integer
+      description: Number of completed downloads
+      example: 1200
+    failedDownloads:
+      type: integer
+      description: Number of failed downloads
+      example: 45
+    totalBytesDownloaded:
+      type: integer
+      description: Total bytes downloaded
+      example: 52428800000
+    averageDownloadSpeed:
+      type: number
+      description: Average download speed in bytes per second
+      example: 1048576
+    averageDownloadTime:
+      type: number
+      description: Average download time in seconds
+      example: 125.5
+    downloadsByType:
+      type: object
+      properties:
+        video:
+          type: integer
+        image:
+          type: integer
+        audio:
+          type: integer
+        document:
+          type: integer
+        archive:
+          type: integer
+      description: Downloads by resource type
+    downloadsByStatus:
+      type: object
+      properties:
+        pending:
+          type: integer
+        queued:
+          type: integer
+        downloading:
+          type: integer
+        processing:
+          type: integer
+        completed:
+          type: integer
+        failed:
+          type: integer
+        cancelled:
+          type: integer
+        expired:
+          type: integer
+      description: Downloads by status
+    downloadsByQuality:
+      type: object
+      additionalProperties:
+        type: integer
+      description: Downloads by quality setting
+    downloadsByFormat:
+      type: object
+      additionalProperties:
+        type: integer
+      description: Downloads by format
+    topDownloadSources:
+      type: array
+      items:
+        type: object
+        properties:
+          domain:
+            type: string
+          count:
+            type: integer
+          bytes:
+            type: integer
+      description: Top download sources
+    generatedAt:
+      type: string
+      format: date-time
+      description: When the stats were generated
+      example: "2024-01-15T10:30:00Z"
+
+# Bulk Download Operations
+
+BulkDownloadRequest:
+  type: object
+  required:
+    - downloads
+  properties:
+    downloads:
+      type: array
+      items:
+        $ref: "#/DownloadRequest"
+      description: Array of download requests
+    batchName:
+      type: string
+      description: Name for the batch download
+      example: "JavaScript Tutorials Batch"
+    batchDescription:
+      type: string
+      description: Description for the batch download
+      example: "A collection of JavaScript tutorial videos"
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Priority for all downloads in the batch
+      example: "normal"
+    concurrency:
+      type: integer
+      minimum: 1
+      maximum: 10
+      description: Number of concurrent downloads
+      example: 3
+    notifyOnComplete:
+      type: boolean
+      description: Send notification when all downloads complete
+      example: true
+    webhook:
+      type: string
+      format: uri
+      description: Webhook URL to call when batch completes
+      example: "https://myapp.com/webhook/batch-complete"
+    autoArchive:
+      type: boolean
+      description: Automatically create archive of completed downloads
+      example: false
+    archiveFormat:
+      type: string
+      enum: ["zip", "tar", "tar.gz"]
+      description: Archive format
+      example: "zip"
+    deleteAfterArchive:
+      type: boolean
+      description: Delete individual files after creating archive
+      example: false
+
+BulkDownloadResponse:
+  type: object
+  properties:
+    batchId:
+      type: string
+      description: Batch download ID
+      example: "batch_abc123def456"
+    downloads:
+      type: array
+      items:
+        $ref: "#/Download"
+      description: Individual download objects
+    totalCount:
+      type: integer
+      description: Total number of downloads in the batch
+      example: 15
+    successCount:
+      type: integer
+      description: Number of successful downloads
+      example: 12
+    failureCount:
+      type: integer
+      description: Number of failed downloads
+      example: 3
+    status:
+      type: string
+      enum: ["pending", "active", "completed", "failed", "cancelled"]
+      description: Overall batch status
+      example: "active"
+    progress:
+      type: number
+      description: Overall progress percentage
+      example: 80.0
+    createdAt:
+      type: string
+      format: date-time
+      description: When the batch was created
+      example: "2024-01-15T10:30:00Z"
+    estimatedCompletionTime:
+      type: string
+      format: date-time
+      description: Estimated completion time
+      example: "2024-01-15T10:45:00Z"
+
+DownloadQueue:
+  type: object
+  properties:
+    totalQueued:
+      type: integer
+      description: Total number of queued downloads
+      example: 25
+    totalActive:
+      type: integer
+      description: Total number of active downloads
+      example: 5
+    queuedDownloads:
+      type: array
+      items:
+        $ref: "#/Download"
+      description: Queued downloads
+    activeDownloads:
+      type: array
+      items:
+        $ref: "#/Download"
+      description: Active downloads
+    estimatedWaitTime:
+      type: integer
+      description: Estimated wait time for new downloads in seconds
+      example: 300
+    maxConcurrent:
+      type: integer
+      description: Maximum concurrent downloads allowed
+      example: 10
+    currentConcurrent:
+      type: integer
+      description: Current concurrent downloads
+      example: 5
+    queueProcessingSpeed:
+      type: number
+      description: Average queue processing speed (downloads per minute)
+      example: 2.5
+
+# Cleanup Operations
+
+CleanupRequest:
+  type: object
+  properties:
+    olderThan:
+      type: string
+      format: date-time
+      description: Clean up downloads older than this date
+      example: "2024-01-01T00:00:00Z"
+    status:
+      type: array
+      items:
+        $ref: "#/DownloadStatus"
+      description: Clean up downloads with these statuses
+      example: ["completed", "failed", "expired"]
+    resourceTypes:
+      type: array
+      items:
+        type: string
+      description: Clean up downloads of these resource types
+      example: ["video", "audio"]
+    dryRun:
+      type: boolean
+      description: Perform dry run without actual cleanup
+      example: true
+    preserveMetadata:
+      type: boolean
+      description: Preserve metadata even after file cleanup
+      example: true
+
+CleanupResponse:
+  type: object
+  properties:
+    cleanedCount:
+      type: integer
+      description: Number of downloads cleaned up
+      example: 150
+    freedBytes:
+      type: integer
+      description: Bytes freed by cleanup
+      example: 5242880000
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          downloadId:
+            type: string
+          error:
+            type: string
+      description: Cleanup errors
+    dryRun:
+      type: boolean
+      description: Whether this was a dry run
+      example: false
+    executedAt:
+      type: string
+      format: date-time
+      description: When the cleanup was executed
+      example: "2024-01-15T10:30:00Z"

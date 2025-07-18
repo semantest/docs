@@ -1,316 +1,489 @@
-# Semantest Developer Guide
-
-Welcome to the Semantest developer documentation. This guide provides comprehensive information for developers working with the Semantest platform.
-
-## Table of Contents
-
-1. [Getting Started](#getting-started)
-2. [Architecture Overview](#architecture-overview)
-3. [API Reference](#api-reference)
-4. [Development Workflow](#development-workflow)
-5. [Testing Strategies](#testing-strategies)
-6. [Best Practices](#best-practices)
-7. [Contributing](#contributing)
-8. [Troubleshooting](#troubleshooting)
+# Developer Guide
 
 ## Getting Started
 
-### Prerequisites
+This guide provides comprehensive information for developers working on the Semantest project, including setup instructions, development workflows, coding standards, and best practices.
 
-- Node.js 18+ (LTS recommended)
-- npm 9+ or yarn 1.22+
-- Git 2.25+
-- Chrome browser (for extension development)
-- VS Code or WebStorm (recommended IDEs)
+## Prerequisites
 
-### Initial Setup
+### System Requirements
+
+- **Node.js**: v18.0.0 or higher
+- **npm**: v8.0.0 or higher
+- **Git**: v2.30.0 or higher
+- **Docker**: v20.10.0 or higher (for containerized development)
+- **PostgreSQL**: v14.0 or higher (for local development)
+- **Redis**: v6.2.0 or higher (for caching)
+
+### Development Tools
+
+- **VSCode**: Recommended IDE with the following extensions:
+  - TypeScript and JavaScript Language Features
+  - ESLint
+  - Prettier
+  - GitLens
+  - Docker
+  - Jest
+  - Thunder Client (for API testing)
+  - Better Comments
+  - Bracket Pair Colorizer
+
+- **Terminal**: Modern terminal with support for:
+  - Git commands
+  - npm scripts
+  - Docker commands
+  - SSH connections
+
+## Project Setup
+
+### 1. Clone the Repository
 
 ```bash
-# Clone the workspace
-git clone https://github.com/semantest/workspace.git
-cd workspace
+git clone https://github.com/semantest/semantest.git
+cd semantest
+```
 
-# Install dependencies for all modules
+### 2. Install Dependencies
+
+```bash
+# Install root dependencies
+npm install
+
+# Install all workspace dependencies
 npm run install:all
-
-# Build all modules
-npm run build:all
-
-# Run tests to verify setup
-npm run test:all
 ```
 
-### Development Environment
+### 3. Environment Configuration
 
-1. **IDE Configuration**
-   - Install TypeScript language support
-   - Install ESLint and Prettier extensions
-   - Enable format on save
-   - Configure TypeScript SDK to use workspace version
+Create environment files for different stages:
 
-2. **Environment Variables**
-   ```bash
-   # Copy example environment files
-   cp .env.example .env
-   cp nodejs.server/.env.example nodejs.server/.env
-   ```
+```bash
+# Development environment
+cp .env.example .env.development
 
-3. **Chrome Extension Development**
-   - Enable Developer Mode in Chrome
-   - Load unpacked extension from `extension.chrome/dist`
-   - Use Chrome DevTools for debugging
+# Test environment
+cp .env.example .env.test
 
-## Architecture Overview
-
-### Domain-Driven Design (DDD)
-
-Semantest follows Domain-Driven Design principles with clear boundaries:
-
-```
-semantest/
-├── core/                    # Shared kernel
-│   ├── src/
-│   │   ├── events/         # Base event classes
-│   │   ├── entities/       # Base entity classes
-│   │   ├── value-objects/  # Common value objects
-│   │   └── utils/          # Shared utilities
-│   └── tests/
-├── [domain].com/           # Domain modules
-│   ├── domain/             # Business logic
-│   │   ├── entities/       # Domain entities
-│   │   ├── events/         # Domain events
-│   │   ├── services/       # Domain services
-│   │   └── value-objects/  # Domain value objects
-│   ├── application/        # Use cases
-│   │   ├── commands/       # Command handlers
-│   │   ├── queries/        # Query handlers
-│   │   └── services/       # Application services
-│   └── infrastructure/     # External adapters
-│       ├── adapters/       # Infrastructure adapters
-│       ├── repositories/   # Data repositories
-│       └── messaging/      # Message handlers
-└── browser/                # Browser automation
+# Production environment (for deployment)
+cp .env.example .env.production
 ```
 
-### Key Architectural Patterns
+Edit the environment files with your specific configuration:
 
-1. **Event-Driven Architecture**
-   - All state changes emit domain events
-   - Events enable loose coupling between modules
-   - Event sourcing capabilities for audit trails
+```bash
+# .env.development
+NODE_ENV=development
+PORT=3000
+DATABASE_URL=postgresql://semantest:password@localhost:5432/semantest_dev
+REDIS_URL=redis://localhost:6379
+LOG_LEVEL=debug
 
-2. **Hexagonal Architecture**
-   - Domain logic isolated from infrastructure
-   - Ports and adapters for external integrations
-   - Testable business logic
+# Google API Configuration
+GOOGLE_API_KEY=your_google_api_key
+GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id
 
-3. **CQRS Pattern**
-   - Commands for state modifications
-   - Queries for data retrieval
-   - Optimized read and write models
+# Pinterest API Configuration
+PINTEREST_API_KEY=your_pinterest_api_key
+PINTEREST_API_SECRET=your_pinterest_api_secret
 
-## API Reference
-
-### Core Module APIs
-
-#### Event Base Class
-
-```typescript
-import { DomainEvent } from '@semantest/core';
-
-export class MyDomainEvent extends DomainEvent {
-  constructor(
-    public readonly data: any,
-    correlationId?: string
-  ) {
-    super('my-domain-event', correlationId);
-  }
-}
+# Instagram API Configuration
+INSTAGRAM_API_KEY=your_instagram_api_key
+INSTAGRAM_API_SECRET=your_instagram_api_secret
 ```
 
-#### Entity Base Class
+### 4. Database Setup
 
-```typescript
-import { Entity, AggregateRoot } from '@semantest/core';
+```bash
+# Start PostgreSQL (if using Docker)
+docker-compose up -d postgres
 
-export class MyEntity extends Entity<MyEntity> {
-  constructor(
-    public readonly id: string,
-    private name: string
-  ) {
-    super();
-  }
+# Create database and run migrations
+npm run db:create
+npm run db:migrate
 
-  getId(): string {
-    return this.id;
-  }
-}
-
-export class MyAggregate extends AggregateRoot<MyAggregate> {
-  changeName(newName: string): void {
-    this.applyEvent(new NameChanged(this.id, newName));
-  }
-
-  protected apply(event: DomainEvent): void {
-    if (event instanceof NameChanged) {
-      this.name = event.newName;
-    }
-  }
-}
+# Seed database with initial data
+npm run db:seed
 ```
 
-#### Browser Automation API
+### 5. Cache Setup
 
-```typescript
-import { BrowserAutomation } from '@semantest/browser';
+```bash
+# Start Redis (if using Docker)
+docker-compose up -d redis
 
-const browser = new BrowserAutomation();
-
-await browser.initialize();
-await browser.navigate('https://example.com');
-await browser.fillInput({
-  selector: '#username',
-  value: 'john.doe@example.com'
-});
-await browser.click({ selector: '#submit' });
-await browser.screenshot({ path: 'result.png' });
-await browser.close();
+# Verify Redis connection
+npm run cache:health
 ```
 
-### Domain Module APIs
+### 6. Build and Start Development Server
 
-#### Google Images Domain
+```bash
+# Build all projects
+npm run build
 
-```typescript
-import { GoogleImagesDownloader } from '@semantest/images.google.com';
-
-const downloader = new GoogleImagesDownloader();
-
-// Download an image
-await downloader.downloadImage({
-  imageUrl: 'https://example.com/image.jpg',
-  searchQuery: 'cute cats',
-  fileName: 'cat-image.jpg'
-});
-
-// Listen for download events
-downloader.on('download-completed', (event) => {
-  console.log(`Downloaded: ${event.fileName}`);
-});
-```
-
-#### ChatGPT Domain
-
-```typescript
-import { ChatGPTAutomation } from '@semantest/chatgpt.com';
-
-const chatgpt = new ChatGPTAutomation();
-
-await chatgpt.initialize();
-await chatgpt.sendMessage('Hello, how are you?');
-const response = await chatgpt.waitForResponse();
-console.log(response);
+# Start development server
+npm run dev
 ```
 
 ## Development Workflow
 
-### Branch Strategy
+### 1. Feature Development
 
 ```bash
-# Feature development
-git checkout -b feature/description
+# Create feature branch
+git checkout -b feature/new-feature-name
 
-# Bug fixes
-git checkout -b fix/description
+# Make changes and test
+npm run test
+npm run lint
 
-# Documentation
-git checkout -b docs/description
+# Commit changes
+git add .
+git commit -m "feat: add new feature"
 
-# Release preparation
-git checkout -b release/version
+# Push to remote
+git push origin feature/new-feature-name
 ```
 
-### Commit Convention
-
-We follow Conventional Commits:
+### 2. Code Quality Checks
 
 ```bash
-# Format: <type>(<scope>): <subject>
+# Run all quality checks
+npm run quality-gates
 
-# Examples:
-git commit -m "feat(images): add high-resolution download"
-git commit -m "fix(browser): handle navigation timeout"
-git commit -m "docs(api): update authentication section"
-git commit -m "test(core): add entity validation tests"
-git commit -m "refactor(chatgpt): simplify message handling"
+# Individual checks
+npm run lint                # ESLint
+npm run type-check         # TypeScript
+npm run test:coverage      # Jest with coverage
+npm run format:check       # Prettier
 ```
 
-Types:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation
-- `test`: Testing
-- `refactor`: Code refactoring
-- `perf`: Performance improvement
-- `build`: Build system changes
-- `ci`: CI/CD changes
-- `chore`: Maintenance tasks
+### 3. Domain Architecture Validation
 
-### Code Review Process
+```bash
+# Validate domain boundaries
+npm run lint:domain-boundaries
 
-1. **Pull Request Creation**
-   - Clear description of changes
-   - Link to related issues
-   - Include test results
-   - Update documentation
+# Check architecture compliance
+npm run validate-architecture
 
-2. **Review Checklist**
-   - [ ] Code follows style guidelines
-   - [ ] Tests pass and coverage maintained
-   - [ ] Documentation updated
-   - [ ] No security vulnerabilities
-   - [ ] Performance impact assessed
-   - [ ] Domain boundaries respected
+# Run domain-specific checks
+npm run domain-check
+```
 
-3. **Merge Requirements**
-   - Approved by 2+ reviewers
-   - All CI checks passing
-   - No merge conflicts
-   - Documentation complete
+### 4. Testing Strategy
 
-## Testing Strategies
+```bash
+# Unit tests
+npm run test
 
-### Test Pyramid
+# Integration tests
+npm run test:integration
+
+# E2E tests
+npm run test:e2e
+
+# Test specific module
+npm run test -- --testPathPattern=images.google.com
+
+# Test with coverage
+npm run test:coverage
+```
+
+## Project Structure
+
+### Monorepo Organization
 
 ```
-         /\
-        /  \  E2E Tests (10%)
-       /----\
-      /      \  Integration Tests (30%)
-     /--------\
-    /          \  Unit Tests (60%)
-   /____________\
+semantest/
+├── core/                          # Core domain and shared components
+│   ├── domain/                    # Domain entities, value objects, events
+│   ├── application/               # Use cases and application services
+│   └── infrastructure/            # Infrastructure adapters
+├── images.google.com/             # Google Images domain module
+├── pinterest.com/                 # Pinterest domain module
+├── instagram.com/                 # Instagram domain module
+├── unsplash.com/                  # Unsplash domain module
+├── twitter.com/                   # Twitter domain module
+├── video.google.com/              # Google Video domain module
+├── extension.chrome/              # Chrome extension module
+├── typescript.client/             # TypeScript client module
+├── nodejs.server/                 # Node.js server module
+├── browser/                       # Browser automation module
+├── docs/                          # Documentation
+├── eslint-plugin-ddd/             # Custom ESLint plugin for DDD
+├── .github/                       # GitHub workflows and templates
+├── .husky/                        # Git hooks
+├── package.json                   # Root package.json
+├── .eslintrc.enhanced.json        # Enhanced ESLint configuration
+├── tsconfig.json                  # TypeScript configuration
+└── docker-compose.yml             # Docker services
 ```
+
+### Domain Module Structure
+
+Each domain module follows the Clean Architecture pattern:
+
+```
+domain-module/
+├── domain/
+│   ├── entities/                  # Domain entities
+│   ├── value-objects/             # Value objects
+│   ├── events/                    # Domain events
+│   └── services/                  # Domain services
+├── application/
+│   ├── use-cases/                 # Application use cases
+│   ├── handlers/                  # Event handlers
+│   └── ports/                     # Application ports
+├── infrastructure/
+│   ├── adapters/                  # External adapters
+│   ├── repositories/              # Data repositories
+│   └── config/                    # Configuration
+├── tests/
+│   ├── unit/                      # Unit tests
+│   ├── integration/               # Integration tests
+│   └── e2e/                       # End-to-end tests
+├── package.json                   # Module dependencies
+├── tsconfig.json                  # TypeScript configuration
+└── jest.config.js                 # Jest configuration
+```
+
+## Coding Standards
+
+### TypeScript Style Guide
+
+#### 1. Naming Conventions
+
+```typescript
+// Classes: PascalCase with domain suffix
+class UserAggregate { }
+class EmailValueObject { }
+class UserRegisteredEvent { }
+class UserService { }
+class UserRepository { }
+
+// Interfaces: PascalCase without 'I' prefix
+interface UserRepository { }
+interface PaymentConfig { }
+
+// Functions and variables: camelCase
+const getUserById = (id: string) => { };
+const userEmail = 'user@example.com';
+
+// Constants: UPPER_CASE
+const MAX_RETRY_ATTEMPTS = 3;
+const DEFAULT_TIMEOUT = 5000;
+
+// Enums: PascalCase
+enum UserStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+  Suspended = 'suspended'
+}
+```
+
+#### 2. Type Definitions
+
+```typescript
+// Always use explicit return types for functions
+function processUser(user: User): Promise<ProcessedUser> {
+  return Promise.resolve(new ProcessedUser(user));
+}
+
+// Use interfaces for object shapes
+interface CreateUserRequest {
+  email: string;
+  password: string;
+  profile: UserProfile;
+}
+
+// Use type aliases for complex types
+type UserID = string;
+type UserRole = 'admin' | 'user' | 'moderator';
+type UserEventHandler = (event: UserEvent) => Promise<void>;
+
+// Use generics for reusable types
+interface Repository<T, ID> {
+  findById(id: ID): Promise<T | null>;
+  save(entity: T): Promise<void>;
+  delete(id: ID): Promise<void>;
+}
+```
+
+#### 3. Error Handling
+
+```typescript
+// Always use specific error types
+import { ValidationError, SecurityError } from '@semantest/core';
+
+// Good: Specific error with context
+function validateEmail(email: string): void {
+  if (!email.includes('@')) {
+    throw new ValidationError(
+      'Invalid email format',
+      'INVALID_EMAIL_FORMAT',
+      { email }
+    );
+  }
+}
+
+// Good: Async error handling
+async function createUser(userData: CreateUserRequest): Promise<User> {
+  try {
+    validateEmail(userData.email);
+    return await userRepository.create(userData);
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw error; // Re-throw validation errors
+    }
+    throw new Error('User creation failed');
+  }
+}
+```
+
+#### 4. Domain-Driven Design Patterns
+
+```typescript
+// Aggregate Root
+class UserAggregate {
+  private constructor(
+    private readonly id: UserId,
+    private email: Email,
+    private profile: UserProfile
+  ) {}
+
+  static create(email: Email, profile: UserProfile): UserAggregate {
+    const id = UserId.generate();
+    return new UserAggregate(id, email, profile);
+  }
+
+  changeEmail(newEmail: Email): void {
+    if (this.email.equals(newEmail)) {
+      return;
+    }
+
+    this.email = newEmail;
+    this.recordEvent(new UserEmailChangedEvent(this.id, newEmail));
+  }
+
+  private recordEvent(event: DomainEvent): void {
+    // Record domain event
+  }
+}
+
+// Value Object
+class Email {
+  private constructor(private readonly value: string) {}
+
+  static create(email: string): Email {
+    if (!this.isValid(email)) {
+      throw new ValidationError(
+        'Invalid email format',
+        'INVALID_EMAIL_FORMAT',
+        { email }
+      );
+    }
+    return new Email(email);
+  }
+
+  equals(other: Email): boolean {
+    return this.value === other.value;
+  }
+
+  toString(): string {
+    return this.value;
+  }
+
+  private static isValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+}
+
+// Domain Event
+class UserEmailChangedEvent implements DomainEvent {
+  constructor(
+    public readonly aggregateId: UserId,
+    public readonly newEmail: Email,
+    public readonly occurredAt: Date = new Date()
+  ) {}
+
+  get eventName(): string {
+    return 'UserEmailChanged';
+  }
+}
+```
+
+### ESLint Configuration
+
+The project uses enhanced ESLint rules for domain-driven design:
+
+```json
+{
+  "extends": [
+    "plugin:@semantest/eslint-plugin-ddd/recommended"
+  ],
+  "rules": {
+    "@semantest/ddd/domain-boundary-enforcement": "error",
+    "@semantest/ddd/aggregate-root-validation": "error",
+    "@semantest/ddd/event-naming-convention": "error",
+    "@semantest/ddd/value-object-immutability": "error",
+    "@semantest/ddd/repository-pattern-compliance": "error",
+    "@semantest/ddd/no-anemic-domain-models": "error"
+  }
+}
+```
+
+### Prettier Configuration
+
+```json
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "endOfLine": "lf"
+}
+```
+
+## Testing Guidelines
 
 ### Unit Testing
 
 ```typescript
-import { MyEntity } from '../domain/entities/my-entity';
+// Example unit test
+describe('UserAggregate', () => {
+  describe('changeEmail', () => {
+    it('should change email when new email is different', () => {
+      // Arrange
+      const originalEmail = Email.create('old@example.com');
+      const newEmail = Email.create('new@example.com');
+      const user = UserAggregate.create(originalEmail, UserProfile.create('John'));
 
-describe('MyEntity', () => {
-  it('should create entity with valid data', () => {
-    const entity = new MyEntity('123', 'Test Name');
-    
-    expect(entity.getId()).toBe('123');
-    expect(entity.getName()).toBe('Test Name');
-  });
+      // Act
+      user.changeEmail(newEmail);
 
-  it('should emit event when name changes', () => {
-    const entity = new MyEntity('123', 'Old Name');
-    const events = entity.changeName('New Name');
-    
-    expect(events).toHaveLength(1);
-    expect(events[0]).toBeInstanceOf(NameChangedEvent);
+      // Assert
+      expect(user.getEmail()).toEqual(newEmail);
+      expect(user.getUncommittedEvents()).toHaveLength(1);
+      expect(user.getUncommittedEvents()[0]).toBeInstanceOf(UserEmailChangedEvent);
+    });
+
+    it('should not change email when new email is same as current', () => {
+      // Arrange
+      const email = Email.create('test@example.com');
+      const user = UserAggregate.create(email, UserProfile.create('John'));
+
+      // Act
+      user.changeEmail(email);
+
+      // Assert
+      expect(user.getEmail()).toEqual(email);
+      expect(user.getUncommittedEvents()).toHaveLength(0);
+    });
   });
 });
 ```
@@ -318,36 +491,42 @@ describe('MyEntity', () => {
 ### Integration Testing
 
 ```typescript
-import { TestBed } from '@semantest/testing';
-
-describe('Google Images Integration', () => {
-  let testBed: TestBed;
+// Example integration test
+describe('UserService Integration', () => {
+  let userService: UserService;
+  let userRepository: UserRepository;
+  let eventBus: EventBus;
 
   beforeEach(async () => {
-    testBed = await TestBed.create({
-      modules: ['@semantest/images.google.com'],
-      providers: [
-        { provide: 'BrowserAdapter', useClass: MockBrowserAdapter }
-      ]
-    });
+    // Setup test database
+    await testDatabase.reset();
+    
+    userRepository = new PostgresUserRepository(testDatabase);
+    eventBus = new InMemoryEventBus();
+    userService = new UserService(userRepository, eventBus);
   });
 
-  it('should download image with proper event flow', async () => {
-    const downloader = testBed.get(GoogleImagesDownloader);
-    const eventBus = testBed.get(EventBus);
+  it('should create user and publish event', async () => {
+    // Arrange
+    const createUserRequest = {
+      email: 'test@example.com',
+      password: 'password123',
+      profile: { name: 'Test User' }
+    };
+
+    // Act
+    const user = await userService.createUser(createUserRequest);
+
+    // Assert
+    expect(user).toBeDefined();
+    expect(user.getEmail().toString()).toBe('test@example.com');
     
-    const events = [];
-    eventBus.subscribe('*', (event) => events.push(event));
+    const savedUser = await userRepository.findById(user.getId());
+    expect(savedUser).toBeDefined();
     
-    await downloader.downloadImage({
-      imageUrl: 'https://example.com/test.jpg'
-    });
-    
-    expect(events).toContainEqual(
-      expect.objectContaining({
-        type: 'GoogleImageDownloadCompleted'
-      })
-    );
+    const publishedEvents = eventBus.getPublishedEvents();
+    expect(publishedEvents).toHaveLength(1);
+    expect(publishedEvents[0]).toBeInstanceOf(UserCreatedEvent);
   });
 });
 ```
@@ -355,907 +534,775 @@ describe('Google Images Integration', () => {
 ### E2E Testing
 
 ```typescript
-import { ChromeExtension } from '@semantest/e2e-utils';
-
-describe('Image Download E2E', () => {
-  let extension: ChromeExtension;
+// Example E2E test
+describe('User Registration E2E', () => {
+  let app: Application;
+  let request: SuperTest<Test>;
 
   beforeAll(async () => {
-    extension = await ChromeExtension.launch({
-      extensionPath: './extension.chrome/dist'
-    });
+    app = await createTestApp();
+    request = supertest(app);
   });
 
-  it('should download image from Google Images', async () => {
-    await extension.navigate('https://images.google.com');
-    await extension.searchFor('cute cats');
-    await extension.clickFirstImage();
-    await extension.clickDownloadButton();
-    
-    const downloads = await extension.getDownloads();
-    expect(downloads).toHaveLength(1);
-    expect(downloads[0].filename).toContain('cute-cats');
+  beforeEach(async () => {
+    await cleanupDatabase();
+  });
+
+  it('should register user successfully', async () => {
+    // Arrange
+    const registrationData = {
+      email: 'test@example.com',
+      password: 'password123',
+      profile: { name: 'Test User' }
+    };
+
+    // Act
+    const response = await request
+      .post('/api/users/register')
+      .send(registrationData)
+      .expect(201);
+
+    // Assert
+    expect(response.body).toMatchObject({
+      id: expect.any(String),
+      email: 'test@example.com',
+      profile: { name: 'Test User' }
+    });
+
+    // Verify user was created in database
+    const user = await userRepository.findByEmail('test@example.com');
+    expect(user).toBeDefined();
   });
 });
 ```
 
-## Best Practices
+## API Development
 
-### Domain Modeling
+### REST API Design
 
-1. **Rich Domain Models**
-   ```typescript
-   // ❌ Anemic model
-   class User {
-     name: string;
-     email: string;
-   }
-   
-   // ✅ Rich model
-   class User extends Entity<User> {
-     private constructor(
-       private readonly id: UserId,
-       private name: PersonName,
-       private email: Email
-     ) {
-       super();
-     }
-     
-     static create(name: string, email: string): User {
-       return new User(
-         UserId.generate(),
-         PersonName.create(name),
-         Email.create(email)
-       );
-     }
-     
-     changeName(newName: string): void {
-       const name = PersonName.create(newName);
-       this.applyEvent(new UserNameChanged(this.id, name));
-     }
-   }
-   ```
+```typescript
+// Controller example
+@Controller('/api/users')
+@UseGuards(AuthGuard)
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
-2. **Value Objects**
-   ```typescript
-   export class Email {
-     private constructor(private readonly value: string) {}
-     
-     static create(value: string): Email {
-       if (!this.isValid(value)) {
-         throw new InvalidEmailError(value);
-       }
-       return new Email(value);
-     }
-     
-     private static isValid(value: string): boolean {
-       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-     }
-     
-     toString(): string {
-       return this.value;
-     }
-   }
-   ```
+  @Post('/register')
+  @HttpCode(201)
+  async register(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    const user = await this.userService.createUser(createUserDto);
+    return UserResponseDto.fromAggregate(user);
+  }
 
-### Error Handling
+  @Get('/:id')
+  async getUser(@Param('id') id: string): Promise<UserResponseDto> {
+    const userId = UserId.fromString(id);
+    const user = await this.userService.getUser(userId);
+    
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    return UserResponseDto.fromAggregate(user);
+  }
 
-1. **Domain Errors**
-   ```typescript
-   export class DomainError extends Error {
-     constructor(
-       message: string,
-       public readonly code: string,
-       public readonly context?: any
-     ) {
-       super(message);
-       this.name = this.constructor.name;
-     }
-   }
-   
-   export class InvalidImageUrlError extends DomainError {
-     constructor(url: string) {
-       super(
-         `Invalid image URL: ${url}`,
-         'INVALID_IMAGE_URL',
-         { url }
-       );
-     }
-   }
-   ```
+  @Put('/:id/email')
+  async changeEmail(
+    @Param('id') id: string,
+    @Body() changeEmailDto: ChangeEmailDto
+  ): Promise<UserResponseDto> {
+    const userId = UserId.fromString(id);
+    const newEmail = Email.create(changeEmailDto.email);
+    
+    const user = await this.userService.changeUserEmail(userId, newEmail);
+    return UserResponseDto.fromAggregate(user);
+  }
+}
+```
 
-2. **Error Recovery**
-   ```typescript
-   async function downloadWithRetry(url: string, maxRetries = 3): Promise<void> {
-     for (let i = 0; i < maxRetries; i++) {
-       try {
-         await download(url);
-         return;
-       } catch (error) {
-         if (i === maxRetries - 1) throw error;
-         
-         logger.warn(`Download failed, retrying (${i + 1}/${maxRetries})`, {
-           url,
-           error: error.message
-         });
-         
-         await delay(Math.pow(2, i) * 1000); // Exponential backoff
-       }
-     }
-   }
-   ```
+### Input Validation
 
-### Performance Optimization
+```typescript
+// DTO with validation
+import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
 
-1. **Lazy Loading**
-   ```typescript
-   export class ImageRepository {
-     private cache = new Map<string, Image>();
-     
-     async findById(id: string): Promise<Image> {
-       if (this.cache.has(id)) {
-         return this.cache.get(id);
-       }
-       
-       const image = await this.loadFromDatabase(id);
-       this.cache.set(id, image);
-       return image;
-     }
-   }
-   ```
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
 
-2. **Event Batching**
-   ```typescript
-   export class EventBatcher {
-     private events: DomainEvent[] = [];
-     private timer: NodeJS.Timeout;
-     
-     add(event: DomainEvent): void {
-       this.events.push(event);
-       this.scheduleFlush();
-     }
-     
-     private scheduleFlush(): void {
-       if (this.timer) return;
-       
-       this.timer = setTimeout(() => {
-         this.flush();
-       }, 100);
-     }
-     
-     private flush(): void {
-       if (this.events.length === 0) return;
-       
-       this.eventBus.publishBatch(this.events);
-       this.events = [];
-       this.timer = null;
-     }
-   }
-   ```
+  @IsString()
+  @MinLength(8)
+  password: string;
 
-## Contributing
+  @IsOptional()
+  profile?: {
+    name?: string;
+    bio?: string;
+    avatar?: string;
+  };
+}
 
-### Development Setup
+export class ChangeEmailDto {
+  @IsEmail()
+  email: string;
+}
+```
 
-1. Fork the repository
-2. Clone your fork
-3. Create a feature branch
-4. Make your changes
-5. Write/update tests
-6. Update documentation
-7. Submit pull request
+### Response DTOs
 
-### Code Quality Standards
+```typescript
+// Response DTO
+export class UserResponseDto {
+  id: string;
+  email: string;
+  profile: UserProfileDto;
+  createdAt: string;
+  updatedAt: string;
 
-- **Test Coverage**: Minimum 80% for new code
-- **Documentation**: All public APIs must be documented
-- **Type Safety**: Strict TypeScript with no `any` types
-- **Linting**: Zero ESLint warnings or errors
-- **Security**: No vulnerable dependencies
+  static fromAggregate(user: UserAggregate): UserResponseDto {
+    return {
+      id: user.getId().toString(),
+      email: user.getEmail().toString(),
+      profile: UserProfileDto.fromValueObject(user.getProfile()),
+      createdAt: user.getCreatedAt().toISOString(),
+      updatedAt: user.getUpdatedAt().toISOString()
+    };
+  }
+}
 
-### Review Process
+export class UserProfileDto {
+  name?: string;
+  bio?: string;
+  avatar?: string;
 
-1. **Automated Checks**
-   - Unit tests pass
-   - Integration tests pass
-   - Code coverage maintained
-   - Linting passes
-   - Security scan clean
+  static fromValueObject(profile: UserProfile): UserProfileDto {
+    return {
+      name: profile.getName(),
+      bio: profile.getBio(),
+      avatar: profile.getAvatar()
+    };
+  }
+}
+```
 
-2. **Manual Review**
-   - Architecture compliance
-   - Performance impact
-   - Security implications
-   - Documentation quality
-   - Code maintainability
+## Database Development
+
+### Migration Example
+
+```typescript
+// Migration file: 20250118000001-create-users-table.ts
+import { QueryInterface, DataTypes } from 'sequelize';
+
+export async function up(queryInterface: QueryInterface): Promise<void> {
+  await queryInterface.createTable('users', {
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true
+      }
+    },
+    password_hash: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    profile_name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    profile_bio: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    profile_avatar: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  });
+
+  // Add indexes
+  await queryInterface.addIndex('users', ['email']);
+  await queryInterface.addIndex('users', ['created_at']);
+}
+
+export async function down(queryInterface: QueryInterface): Promise<void> {
+  await queryInterface.dropTable('users');
+}
+```
+
+### Repository Implementation
+
+```typescript
+// Repository implementation
+export class PostgresUserRepository implements UserRepository {
+  constructor(private readonly database: Database) {}
+
+  async findById(id: UserId): Promise<UserAggregate | null> {
+    const result = await this.database.query(
+      'SELECT * FROM users WHERE id = $1',
+      [id.toString()]
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return this.mapToAggregate(result.rows[0]);
+  }
+
+  async findByEmail(email: Email): Promise<UserAggregate | null> {
+    const result = await this.database.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email.toString()]
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return this.mapToAggregate(result.rows[0]);
+  }
+
+  async save(user: UserAggregate): Promise<void> {
+    const userData = this.mapToData(user);
+    
+    await this.database.query(
+      `INSERT INTO users (id, email, password_hash, profile_name, profile_bio, profile_avatar)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (id) DO UPDATE SET
+         email = EXCLUDED.email,
+         password_hash = EXCLUDED.password_hash,
+         profile_name = EXCLUDED.profile_name,
+         profile_bio = EXCLUDED.profile_bio,
+         profile_avatar = EXCLUDED.profile_avatar,
+         updated_at = NOW()`,
+      [
+        userData.id,
+        userData.email,
+        userData.passwordHash,
+        userData.profileName,
+        userData.profileBio,
+        userData.profileAvatar
+      ]
+    );
+  }
+
+  private mapToAggregate(row: any): UserAggregate {
+    const id = UserId.fromString(row.id);
+    const email = Email.create(row.email);
+    const profile = UserProfile.create(
+      row.profile_name,
+      row.profile_bio,
+      row.profile_avatar
+    );
+
+    return UserAggregate.reconstitute(id, email, profile, row.created_at, row.updated_at);
+  }
+
+  private mapToData(user: UserAggregate): any {
+    return {
+      id: user.getId().toString(),
+      email: user.getEmail().toString(),
+      passwordHash: user.getPasswordHash(),
+      profileName: user.getProfile().getName(),
+      profileBio: user.getProfile().getBio(),
+      profileAvatar: user.getProfile().getAvatar()
+    };
+  }
+}
+```
+
+## Event-Driven Architecture
+
+### Domain Events
+
+```typescript
+// Domain event base class
+export abstract class DomainEvent {
+  constructor(
+    public readonly aggregateId: string,
+    public readonly occurredAt: Date = new Date(),
+    public readonly correlationId?: string
+  ) {}
+
+  abstract get eventName(): string;
+}
+
+// Specific domain event
+export class UserEmailChangedEvent extends DomainEvent {
+  constructor(
+    aggregateId: string,
+    public readonly oldEmail: string,
+    public readonly newEmail: string,
+    occurredAt?: Date,
+    correlationId?: string
+  ) {
+    super(aggregateId, occurredAt, correlationId);
+  }
+
+  get eventName(): string {
+    return 'UserEmailChanged';
+  }
+}
+```
+
+### Event Handlers
+
+```typescript
+// Event handler
+@EventHandler(UserEmailChangedEvent)
+export class UserEmailChangedHandler {
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly logger: Logger
+  ) {}
+
+  async handle(event: UserEmailChangedEvent): Promise<void> {
+    try {
+      await this.emailService.sendEmailConfirmation(event.newEmail);
+      
+      this.logger.info('Email confirmation sent', {
+        userId: event.aggregateId,
+        newEmail: event.newEmail,
+        correlationId: event.correlationId
+      });
+    } catch (error) {
+      this.logger.error('Failed to send email confirmation', {
+        error: error.message,
+        userId: event.aggregateId,
+        correlationId: event.correlationId
+      });
+      
+      throw error;
+    }
+  }
+}
+```
+
+### Event Bus
+
+```typescript
+// Event bus implementation
+export class InMemoryEventBus implements EventBus {
+  private handlers: Map<string, EventHandler[]> = new Map();
+
+  register<T extends DomainEvent>(
+    eventName: string,
+    handler: EventHandler<T>
+  ): void {
+    const handlers = this.handlers.get(eventName) || [];
+    handlers.push(handler);
+    this.handlers.set(eventName, handlers);
+  }
+
+  async publish<T extends DomainEvent>(event: T): Promise<void> {
+    const handlers = this.handlers.get(event.eventName) || [];
+    
+    await Promise.all(
+      handlers.map(handler => handler.handle(event))
+    );
+  }
+}
+```
+
+## Performance Optimization
+
+### Caching Strategy
+
+```typescript
+// Cache decorator
+export function Cacheable(ttl: number = 300) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+    
+    descriptor.value = async function (...args: any[]) {
+      const cacheKey = `${target.constructor.name}:${propertyKey}:${JSON.stringify(args)}`;
+      
+      // Try to get from cache
+      const cached = await this.cache.get(cacheKey);
+      if (cached) {
+        return cached;
+      }
+      
+      // Execute original method
+      const result = await originalMethod.apply(this, args);
+      
+      // Cache the result
+      await this.cache.set(cacheKey, result, ttl);
+      
+      return result;
+    };
+  };
+}
+
+// Usage
+export class UserService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly cache: CacheService
+  ) {}
+
+  @Cacheable(300) // Cache for 5 minutes
+  async getUserProfile(userId: UserId): Promise<UserProfile> {
+    const user = await this.userRepository.findById(userId);
+    return user ? user.getProfile() : null;
+  }
+}
+```
+
+### Database Query Optimization
+
+```typescript
+// Query builder for complex queries
+export class UserQueryBuilder {
+  private query: string = 'SELECT * FROM users';
+  private conditions: string[] = [];
+  private params: any[] = [];
+
+  whereEmail(email: string): this {
+    this.conditions.push(`email = $${this.params.length + 1}`);
+    this.params.push(email);
+    return this;
+  }
+
+  whereCreatedAfter(date: Date): this {
+    this.conditions.push(`created_at > $${this.params.length + 1}`);
+    this.params.push(date);
+    return this;
+  }
+
+  orderBy(field: string, direction: 'ASC' | 'DESC' = 'ASC'): this {
+    this.query += ` ORDER BY ${field} ${direction}`;
+    return this;
+  }
+
+  limit(count: number): this {
+    this.query += ` LIMIT $${this.params.length + 1}`;
+    this.params.push(count);
+    return this;
+  }
+
+  build(): { query: string; params: any[] } {
+    if (this.conditions.length > 0) {
+      this.query += ' WHERE ' + this.conditions.join(' AND ');
+    }
+    
+    return {
+      query: this.query,
+      params: this.params
+    };
+  }
+}
+
+// Usage
+const { query, params } = new UserQueryBuilder()
+  .whereEmail('test@example.com')
+  .whereCreatedAfter(new Date('2023-01-01'))
+  .orderBy('created_at', 'DESC')
+  .limit(10)
+  .build();
+```
+
+## Monitoring and Logging
+
+### Structured Logging
+
+```typescript
+// Logger configuration
+const logger = createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: combine(
+    timestamp(),
+    errors({ stack: true }),
+    json()
+  ),
+  transports: [
+    new transports.Console(),
+    new transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new transports.File({ filename: 'logs/combined.log' })
+  ]
+});
+
+// Usage in service
+export class UserService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly logger: Logger
+  ) {}
+
+  async createUser(userData: CreateUserRequest): Promise<UserAggregate> {
+    const correlationId = generateCorrelationId();
+    
+    this.logger.info('Creating user', {
+      correlationId,
+      email: userData.email,
+      operation: 'createUser'
+    });
+
+    try {
+      const user = UserAggregate.create(
+        Email.create(userData.email),
+        UserProfile.create(userData.profile.name)
+      );
+
+      await this.userRepository.save(user);
+
+      this.logger.info('User created successfully', {
+        correlationId,
+        userId: user.getId().toString(),
+        email: userData.email
+      });
+
+      return user;
+    } catch (error) {
+      this.logger.error('Failed to create user', {
+        correlationId,
+        email: userData.email,
+        error: error.message,
+        stack: error.stack
+      });
+
+      throw error;
+    }
+  }
+}
+```
+
+### Performance Monitoring
+
+```typescript
+// Performance monitoring decorator
+export function Monitor() {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const originalMethod = descriptor.value;
+    
+    descriptor.value = async function (...args: any[]) {
+      const startTime = Date.now();
+      const methodName = `${target.constructor.name}.${propertyKey}`;
+      
+      try {
+        const result = await originalMethod.apply(this, args);
+        
+        const duration = Date.now() - startTime;
+        this.metrics.histogram('method_duration_ms', duration, {
+          method: methodName,
+          status: 'success'
+        });
+        
+        return result;
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        this.metrics.histogram('method_duration_ms', duration, {
+          method: methodName,
+          status: 'error'
+        });
+        
+        this.metrics.increment('method_error_count', {
+          method: methodName,
+          error: error.constructor.name
+        });
+        
+        throw error;
+      }
+    };
+  };
+}
+```
+
+## Deployment
+
+### Docker Configuration
+
+```dockerfile
+# Dockerfile for production
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+
+COPY . .
+RUN npm run build
+
+FROM node:18-alpine AS runtime
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S semantest -u 1001
+
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder --chown=semantest:nodejs /app/dist ./dist
+COPY --from=builder --chown=semantest:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=semantest:nodejs /app/package*.json ./
+
+USER semantest
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+CMD ["node", "dist/main.js"]
+```
+
+### Environment-Specific Configuration
+
+```typescript
+// Configuration management
+export class ConfigService {
+  private static instance: ConfigService;
+  private config: any;
+
+  private constructor() {
+    this.config = {
+      app: {
+        name: process.env.APP_NAME || 'semantest',
+        version: process.env.APP_VERSION || '1.0.0',
+        port: parseInt(process.env.PORT || '3000'),
+        env: process.env.NODE_ENV || 'development'
+      },
+      database: {
+        url: process.env.DATABASE_URL || 'postgresql://localhost:5432/semantest',
+        pool: {
+          min: parseInt(process.env.DB_POOL_MIN || '2'),
+          max: parseInt(process.env.DB_POOL_MAX || '10')
+        }
+      },
+      cache: {
+        url: process.env.REDIS_URL || 'redis://localhost:6379',
+        ttl: parseInt(process.env.CACHE_TTL || '300')
+      },
+      logging: {
+        level: process.env.LOG_LEVEL || 'info'
+      }
+    };
+  }
+
+  static getInstance(): ConfigService {
+    if (!ConfigService.instance) {
+      ConfigService.instance = new ConfigService();
+    }
+    return ConfigService.instance;
+  }
+
+  get<T>(key: string): T {
+    return this.config[key];
+  }
+}
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### 1. Module Not Found Errors
+1. **TypeScript Compilation Errors**
+   ```bash
+   # Clear TypeScript cache
+   rm -rf node_modules/.cache
+   
+   # Rebuild TypeScript
+   npm run build
+   ```
 
-**Problem**: TypeScript cannot resolve module imports
+2. **ESLint Rule Violations**
+   ```bash
+   # Fix auto-fixable issues
+   npm run lint:fix
+   
+   # Check specific domain boundaries
+   npm run lint:domain-boundaries
+   ```
+
+3. **Test Failures**
+   ```bash
+   # Run tests with verbose output
+   npm run test -- --verbose
+   
+   # Run specific test file
+   npm run test -- --testPathPattern=UserService.test.ts
+   ```
+
+4. **Database Connection Issues**
+   ```bash
+   # Check database connection
+   npm run db:health
+   
+   # Reset database
+   npm run db:reset
+   ```
+
+### Debug Configuration
+
 ```typescript
-// Error: Cannot find module '@semantest/core'
-import { Entity } from '@semantest/core';
-```
-
-**Solutions**:
-```bash
-# Solution 1: Rebuild all modules
-npm run build:all
-
-# Solution 2: Check module links
-npm run link:check
-
-# Solution 3: Clean and reinstall
-npm run clean:all
-npm run install:all
-npm run build:all
-
-# Solution 4: Verify tsconfig paths
-cat tsconfig.json | grep -A 10 "paths"
-```
-
-**Advanced debugging**:
-```typescript
-// Check module resolution
-console.log(require.resolve('@semantest/core'));
-
-// Verify module exports
-const core = require('@semantest/core');
-console.log(Object.keys(core));
-```
-
-#### 2. TypeScript Type Errors
-
-**Problem**: Type mismatches or missing types
-```typescript
-// Error: Property 'correlationId' does not exist on type 'DomainEvent'
-const correlationId = event.correlationId;
-```
-
-**Solutions**:
-```bash
-# Solution 1: Regenerate type definitions
-npm run types:generate
-
-# Solution 2: Check TypeScript version compatibility
-npm ls typescript
-# Ensure all modules use the same TypeScript version
-
-# Solution 3: Clear TypeScript cache
-rm -rf node_modules/.cache/typescript
-npm run build:all
-
-# Solution 4: Strict type checking
-npx tsc --noEmit --strict
-```
-
-**Type debugging example**:
-```typescript
-// Use type assertions for debugging
-import { DomainEvent } from '@semantest/core';
-
-function debugEventType(event: unknown) {
-  // Type guard
-  if (isDomainEvent(event)) {
-    console.log('Event type:', event.eventType);
-    console.log('Correlation ID:', event.correlationId);
-  }
-}
-
-function isDomainEvent(obj: any): obj is DomainEvent {
-  return obj && 
-         typeof obj.eventType === 'string' &&
-         typeof obj.correlationId === 'string' &&
-         obj.timestamp instanceof Date;
-}
-```
-
-#### 3. Event Bus Not Receiving Events
-
-**Problem**: Events are published but handlers don't execute
-```typescript
-// Publishing event
-eventBus.publish(new UserCreated(userId));
-
-// Handler never called
-eventBus.subscribe('UserCreated', async (event) => {
-  console.log('This never prints');
-});
-```
-
-**Solutions**:
-```typescript
-// Solution 1: Check event type matching
-class UserCreated extends DomainEvent {
-  // Ensure eventType matches subscription
-  readonly eventType = 'UserCreated'; // Must match exactly
-}
-
-// Solution 2: Verify async handling
-eventBus.subscribe('UserCreated', async (event) => {
-  try {
-    await handleUserCreated(event);
-  } catch (error) {
-    // Always handle errors in async handlers
-    logger.error('Handler failed', error);
-  }
-});
-
-// Solution 3: Debug event flow
-const debugEventBus = {
-  publish: async (event: DomainEvent) => {
-    console.log(`Publishing: ${event.eventType}`, event);
-    await eventBus.publish(event);
-  },
-  subscribe: (type: string, handler: EventHandler) => {
-    console.log(`Subscribing to: ${type}`);
-    eventBus.subscribe(type, async (event) => {
-      console.log(`Handling: ${event.eventType}`, event);
-      await handler(event);
-    });
-  }
-};
-
-// Solution 4: Check event bus initialization
-if (!eventBus.isInitialized()) {
-  await eventBus.initialize();
-}
-```
-
-#### 4. Browser Automation Timeouts
-
-**Problem**: Browser operations timeout or hang
-```typescript
-// TimeoutError: Waiting for selector "#submit" failed: timeout 30000ms exceeded
-await browser.click({ selector: '#submit' });
-```
-
-**Solutions**:
-```typescript
-// Solution 1: Increase timeout
-await browser.click({ 
-  selector: '#submit',
-  timeout: 60000 // 60 seconds
-});
-
-// Solution 2: Wait for element explicitly
-await browser.waitForSelector('#submit', {
-  visible: true,
-  timeout: 30000
-});
-await browser.click({ selector: '#submit' });
-
-// Solution 3: Debug element state
-const elementInfo = await browser.evaluate(() => {
-  const element = document.querySelector('#submit');
-  return {
-    exists: !!element,
-    visible: element?.offsetParent !== null,
-    enabled: !element?.disabled,
-    text: element?.textContent,
-    classes: element?.className
-  };
-});
-console.log('Element state:', elementInfo);
-
-// Solution 4: Take screenshot for debugging
-await browser.screenshot({ 
-  path: 'debug-timeout.png',
-  fullPage: true 
-});
-
-// Solution 5: Use retry logic
-async function clickWithRetry(selector: string, maxRetries = 3) {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      await browser.click({ selector });
-      return;
-    } catch (error) {
-      if (i === maxRetries - 1) throw error;
-      console.log(`Retry ${i + 1}/${maxRetries}`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+// Debug configuration for VSCode
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Node.js",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/main.js",
+      "env": {
+        "NODE_ENV": "development",
+        "LOG_LEVEL": "debug"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand", "--no-cache", "--no-coverage"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
-  }
+  ]
 }
-```
-
-#### 5. Memory Leaks
-
-**Problem**: Application memory usage grows over time
-```bash
-# Node process using excessive memory
-FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
-```
-
-**Solutions**:
-```typescript
-// Solution 1: Proper event listener cleanup
-class ComponentWithCleanup extends Entity<ComponentWithCleanup> {
-  private subscriptions: (() => void)[] = [];
-  
-  initialize() {
-    // Store unsubscribe functions
-    this.subscriptions.push(
-      eventBus.subscribe('SomeEvent', this.handleEvent.bind(this))
-    );
-  }
-  
-  destroy() {
-    // Clean up all subscriptions
-    this.subscriptions.forEach(unsubscribe => unsubscribe());
-    this.subscriptions = [];
-  }
-}
-
-// Solution 2: Clear large data structures
-class DataProcessor {
-  private cache = new Map<string, LargeObject>();
-  
-  processData(id: string) {
-    const data = this.loadData(id);
-    this.cache.set(id, data);
-    
-    // Clear old entries
-    if (this.cache.size > 1000) {
-      const firstKey = this.cache.keys().next().value;
-      this.cache.delete(firstKey);
-    }
-  }
-  
-  // Provide manual cleanup
-  clearCache() {
-    this.cache.clear();
-  }
-}
-
-// Solution 3: Use WeakMap for object references
-class ObjectTracker {
-  // WeakMap allows garbage collection of keys
-  private metadata = new WeakMap<object, Metadata>();
-  
-  track(obj: object, meta: Metadata) {
-    this.metadata.set(obj, meta);
-    // No need to manually clean up
-  }
-}
-
-// Solution 4: Monitor memory usage
-import { memoryUsage } from 'process';
-
-setInterval(() => {
-  const usage = memoryUsage();
-  console.log('Memory usage:', {
-    rss: `${Math.round(usage.rss / 1024 / 1024)} MB`,
-    heapTotal: `${Math.round(usage.heapTotal / 1024 / 1024)} MB`,
-    heapUsed: `${Math.round(usage.heapUsed / 1024 / 1024)} MB`,
-    external: `${Math.round(usage.external / 1024 / 1024)} MB`
-  });
-}, 60000); // Every minute
-```
-
-#### 6. Domain Event Ordering Issues
-
-**Problem**: Events processed out of order
-```typescript
-// Events arrive in wrong order
-// Expected: Created → Updated → Completed
-// Actual: Created → Completed → Updated
-```
-
-**Solutions**:
-```typescript
-// Solution 1: Use event versioning
-class OrderAggregate extends AggregateRoot<OrderAggregate> {
-  private version = 0;
-  
-  protected applyEvent(event: DomainEvent): void {
-    // Check event version
-    if (event.aggregateVersion !== this.version + 1) {
-      throw new EventVersionMismatchError(
-        this.version,
-        event.aggregateVersion
-      );
-    }
-    
-    super.applyEvent(event);
-    this.version++;
-  }
-}
-
-// Solution 2: Implement event ordering
-class OrderedEventBus implements IEventBus {
-  private queue = new PriorityQueue<QueuedEvent>();
-  
-  async publish(event: DomainEvent): Promise<void> {
-    this.queue.enqueue({
-      event,
-      priority: event.timestamp.getTime()
-    });
-    
-    await this.processQueue();
-  }
-  
-  private async processQueue(): Promise<void> {
-    while (!this.queue.isEmpty()) {
-      const { event } = this.queue.dequeue();
-      await this.processEvent(event);
-    }
-  }
-}
-
-// Solution 3: Use saga pattern for complex flows
-class OrderSaga {
-  private state: SagaState = 'initial';
-  
-  async handle(event: DomainEvent): Promise<void> {
-    switch (this.state) {
-      case 'initial':
-        if (event instanceof OrderCreated) {
-          this.state = 'created';
-          await this.handleOrderCreated(event);
-        }
-        break;
-        
-      case 'created':
-        if (event instanceof OrderUpdated) {
-          this.state = 'updated';
-          await this.handleOrderUpdated(event);
-        }
-        break;
-        
-      // Handle out-of-order events
-      default:
-        await this.compensate(event);
-    }
-  }
-}
-```
-
-#### 7. Chrome Extension Content Script Issues
-
-**Problem**: Content script not injecting or executing
-```javascript
-// manifest.json content script not working
-"content_scripts": [{
-  "matches": ["https://*.google.com/*"],
-  "js": ["content.js"]
-}]
-```
-
-**Solutions**:
-```typescript
-// Solution 1: Debug content script injection
-// In background script
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete') {
-    chrome.tabs.sendMessage(tabId, { type: 'ping' }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Content script not loaded:', chrome.runtime.lastError);
-        // Manually inject if needed
-        chrome.tabs.executeScript(tabId, {
-          file: 'content.js'
-        });
-      }
-    });
-  }
-});
-
-// Solution 2: Check CSP and permissions
-// In content script
-console.log('Content script loaded at:', window.location.href);
-console.log('Permissions:', {
-  canAccessDOM: !!document.body,
-  canUseChrome: !!chrome.runtime,
-  canSendMessages: !!chrome.runtime?.sendMessage
-});
-
-// Solution 3: Handle dynamic content
-const observer = new MutationObserver((mutations) => {
-  for (const mutation of mutations) {
-    if (mutation.type === 'childList') {
-      // Check for dynamically added elements
-      const newElements = mutation.target.querySelectorAll('.target-class');
-      newElements.forEach(initializeElement);
-    }
-  }
-});
-
-observer.observe(document.body, {
-  childList: true,
-  subtree: true
-});
-
-// Solution 4: Race condition handling
-function waitForElement(selector: string, timeout = 10000): Promise<Element> {
-  return new Promise((resolve, reject) => {
-    const element = document.querySelector(selector);
-    if (element) return resolve(element);
-    
-    const observer = new MutationObserver(() => {
-      const element = document.querySelector(selector);
-      if (element) {
-        observer.disconnect();
-        resolve(element);
-      }
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-    
-    setTimeout(() => {
-      observer.disconnect();
-      reject(new Error(`Element ${selector} not found`));
-    }, timeout);
-  });
-}
-```
-
-### Advanced Debugging Techniques
-
-#### Enable Verbose Logging
-
-```typescript
-// Create debug namespace
-import debug from 'debug';
-
-// Enable all Semantest debugging
-process.env.DEBUG = 'semantest:*';
-
-// Enable specific module debugging
-process.env.DEBUG = 'semantest:core:*,semantest:browser:*';
-
-// Create module-specific loggers
-const log = {
-  main: debug('semantest:images:main'),
-  download: debug('semantest:images:download'),
-  events: debug('semantest:images:events'),
-  error: debug('semantest:images:error')
-};
-
-// Use structured logging
-log.download('Starting download', {
-  url,
-  fileName,
-  timestamp: Date.now(),
-  correlationId: event.correlationId
-});
-
-// Conditional logging
-if (log.events.enabled) {
-  log.events('Event published', event.toJSON());
-}
-```
-
-#### Performance Profiling
-
-```typescript
-// Advanced performance monitoring
-class PerformanceMonitor {
-  private marks = new Map<string, number>();
-  private measures: PerformanceMeasure[] = [];
-  
-  mark(name: string): void {
-    this.marks.set(name, performance.now());
-  }
-  
-  measure(name: string, startMark: string, endMark?: string): number {
-    const start = this.marks.get(startMark);
-    const end = endMark ? this.marks.get(endMark) : performance.now();
-    
-    if (!start) throw new Error(`Mark ${startMark} not found`);
-    
-    const duration = end - start;
-    this.measures.push({ name, duration, timestamp: Date.now() });
-    
-    return duration;
-  }
-  
-  getReport(): PerformanceReport {
-    const summary = this.measures.reduce((acc, measure) => {
-      if (!acc[measure.name]) {
-        acc[measure.name] = {
-          count: 0,
-          total: 0,
-          min: Infinity,
-          max: -Infinity,
-          avg: 0
-        };
-      }
-      
-      const stat = acc[measure.name];
-      stat.count++;
-      stat.total += measure.duration;
-      stat.min = Math.min(stat.min, measure.duration);
-      stat.max = Math.max(stat.max, measure.duration);
-      stat.avg = stat.total / stat.count;
-      
-      return acc;
-    }, {} as Record<string, PerformanceStat>);
-    
-    return { measures: this.measures, summary };
-  }
-}
-
-// Usage
-const perf = new PerformanceMonitor();
-
-perf.mark('download-start');
-await downloadImage(url);
-perf.mark('download-end');
-
-const duration = perf.measure('image-download', 'download-start', 'download-end');
-console.log(`Download took ${duration}ms`);
-
-// Get performance report
-console.log(perf.getReport());
-```
-
-#### Memory Leak Detection
-
-```typescript
-// Memory leak detector
-class MemoryLeakDetector {
-  private snapshots: MemorySnapshot[] = [];
-  private interval: NodeJS.Timer;
-  
-  start(intervalMs = 60000): void {
-    this.interval = setInterval(() => {
-      this.takeSnapshot();
-    }, intervalMs);
-  }
-  
-  stop(): void {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
-  }
-  
-  private takeSnapshot(): void {
-    const usage = process.memoryUsage();
-    const snapshot: MemorySnapshot = {
-      timestamp: Date.now(),
-      rss: usage.rss,
-      heapTotal: usage.heapTotal,
-      heapUsed: usage.heapUsed,
-      external: usage.external,
-      arrayBuffers: usage.arrayBuffers
-    };
-    
-    this.snapshots.push(snapshot);
-    
-    // Keep only last 100 snapshots
-    if (this.snapshots.length > 100) {
-      this.snapshots.shift();
-    }
-    
-    // Check for potential leak
-    if (this.detectLeak()) {
-      console.warn('Potential memory leak detected!', {
-        current: this.formatBytes(snapshot.heapUsed),
-        trend: this.getMemoryTrend()
-      });
-    }
-  }
-  
-  private detectLeak(): boolean {
-    if (this.snapshots.length < 10) return false;
-    
-    // Check if memory consistently increases
-    const recent = this.snapshots.slice(-10);
-    let increases = 0;
-    
-    for (let i = 1; i < recent.length; i++) {
-      if (recent[i].heapUsed > recent[i-1].heapUsed) {
-        increases++;
-      }
-    }
-    
-    return increases > 8; // 80% increase rate
-  }
-  
-  private formatBytes(bytes: number): string {
-    return `${Math.round(bytes / 1024 / 1024)} MB`;
-  }
-}
-
-// Start leak detection
-const leakDetector = new MemoryLeakDetector();
-leakDetector.start();
-
-// Stop on shutdown
-process.on('SIGTERM', () => {
-  leakDetector.stop();
-});
-```
-
-### Production Debugging
-
-#### Remote Debugging
-
-```typescript
-// Enable remote debugging for production
-if (process.env.ENABLE_REMOTE_DEBUG) {
-  const inspector = require('inspector');
-  inspector.open(9229, '0.0.0.0');
-  console.log('Remote debugging enabled on port 9229');
-}
-
-// SSH tunnel for secure debugging
-// ssh -L 9229:localhost:9229 user@production-server
-// Then open chrome://inspect
-```
-
-#### Error Tracking
-
-```typescript
-// Comprehensive error tracking
-class ErrorTracker {
-  private errors: TrackedError[] = [];
-  
-  track(error: Error, context?: any): void {
-    const tracked: TrackedError = {
-      id: generateId(),
-      timestamp: new Date(),
-      message: error.message,
-      stack: error.stack,
-      context,
-      environment: {
-        nodeVersion: process.version,
-        platform: process.platform,
-        memory: process.memoryUsage(),
-        uptime: process.uptime()
-      }
-    };
-    
-    this.errors.push(tracked);
-    this.sendToMonitoring(tracked);
-  }
-  
-  private sendToMonitoring(error: TrackedError): void {
-    // Send to external service (Sentry, etc.)
-    if (process.env.SENTRY_DSN) {
-      Sentry.captureException(error);
-    }
-    
-    // Log to file for analysis
-    fs.appendFileSync(
-      'errors.log',
-      JSON.stringify(error) + '\n'
-    );
-  }
-}
-
-// Global error handler
-process.on('uncaughtException', (error) => {
-  errorTracker.track(error, { fatal: true });
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  errorTracker.track(new Error(`Unhandled rejection: ${reason}`), {
-    promise,
-    reason
-  });
-});
 ```
 
 ## Resources
 
-- [Architecture Documentation](./architecture/README.md)
-- [API Reference](./api-reference/README.md)
-- [Security Guide](./security/README.md)
-- [Performance Guide](./performance/README.md)
-- [Migration Guide](./migration/README.md)
+### Documentation
+- [API Reference](./API_REFERENCE.md)
+- [Architecture Guide](./ARCHITECTURE_GUIDE.md)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Domain-Driven Design](https://martinfowler.com/tags/domain%20driven%20design.html)
 
-## Support
+### Tools
+- [ESLint](https://eslint.org/)
+- [Prettier](https://prettier.io/)
+- [Jest](https://jestjs.io/)
+- [Docker](https://docs.docker.com/)
+- [PostgreSQL](https://www.postgresql.org/docs/)
+- [Redis](https://redis.io/documentation)
 
-- **Documentation**: https://docs.semantest.com
-- **Issues**: https://github.com/semantest/workspace/issues
-- **Discussions**: https://github.com/semantest/workspace/discussions
-- **Security**: security@semantest.com
+### Community
+- [GitHub Repository](https://github.com/semantest/semantest)
+- [Issue Tracker](https://github.com/semantest/semantest/issues)
+- [Contributing Guide](./CONTRIBUTING.md)
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: January 18, 2025  
+**Maintainer**: Semantest Development Team

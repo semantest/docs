@@ -1,0 +1,423 @@
+# Common Schemas for Semantest API
+
+Error:
+  type: object
+  required:
+    - code
+    - message
+    - timestamp
+  properties:
+    code:
+      type: string
+      description: Error code for programmatic handling
+      example: "VALIDATION_ERROR"
+    message:
+      type: string
+      description: Human-readable error message
+      example: "The provided data failed validation"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the error occurred
+      example: "2024-01-15T10:30:00Z"
+    details:
+      type: object
+      description: Additional error details
+      additionalProperties: true
+    requestId:
+      type: string
+      description: Unique request identifier for tracking
+      example: "req_123abc456def"
+    path:
+      type: string
+      description: API path where error occurred
+      example: "/v1/videos/invalid-id"
+
+ValidationError:
+  type: object
+  required:
+    - code
+    - message
+    - timestamp
+    - validationErrors
+  properties:
+    code:
+      type: string
+      enum: ["VALIDATION_ERROR"]
+      example: "VALIDATION_ERROR"
+    message:
+      type: string
+      example: "Request validation failed"
+    timestamp:
+      type: string
+      format: date-time
+      example: "2024-01-15T10:30:00Z"
+    validationErrors:
+      type: array
+      items:
+        type: object
+        required:
+          - field
+          - code
+          - message
+        properties:
+          field:
+            type: string
+            description: Field that failed validation
+            example: "email"
+          code:
+            type: string
+            description: Validation error code
+            example: "INVALID_FORMAT"
+          message:
+            type: string
+            description: Human-readable validation error
+            example: "Email format is invalid"
+          value:
+            description: The invalid value that was provided
+            example: "not-an-email"
+    requestId:
+      type: string
+      example: "req_123abc456def"
+
+PaginationInfo:
+  type: object
+  required:
+    - page
+    - pageSize
+    - total
+    - totalPages
+    - hasNext
+    - hasPrevious
+  properties:
+    page:
+      type: integer
+      minimum: 1
+      description: Current page number
+      example: 1
+    pageSize:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: Number of items per page
+      example: 20
+    total:
+      type: integer
+      minimum: 0
+      description: Total number of items
+      example: 150
+    totalPages:
+      type: integer
+      minimum: 0
+      description: Total number of pages
+      example: 8
+    hasNext:
+      type: boolean
+      description: Whether there are more pages
+      example: true
+    hasPrevious:
+      type: boolean
+      description: Whether there are previous pages
+      example: false
+
+PaginatedResponse:
+  type: object
+  required:
+    - data
+    - pagination
+  properties:
+    data:
+      type: array
+      description: Array of items for current page
+      items:
+        type: object
+    pagination:
+      $ref: "#/PaginationInfo"
+
+DomainEvent:
+  type: object
+  required:
+    - eventId
+    - eventType
+    - timestamp
+    - correlationId
+  properties:
+    eventId:
+      type: string
+      description: Unique event identifier
+      example: "evt_123abc456def"
+    eventType:
+      type: string
+      description: Type of domain event
+      example: "video.download.completed"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the event occurred
+      example: "2024-01-15T10:30:00Z"
+    correlationId:
+      type: string
+      description: Correlation ID for tracking related events
+      example: "corr_789xyz123abc"
+    causationId:
+      type: string
+      description: ID of the event that caused this event
+      example: "evt_456def789ghi"
+    metadata:
+      type: object
+      description: Additional event metadata
+      additionalProperties: true
+    aggregateId:
+      type: string
+      description: ID of the aggregate that generated this event
+      example: "video_abc123def456"
+    aggregateType:
+      type: string
+      description: Type of aggregate that generated this event
+      example: "Video"
+    version:
+      type: integer
+      description: Version of the aggregate when event was generated
+      example: 1
+
+# Common Value Objects
+Id:
+  type: object
+  required:
+    - value
+  properties:
+    value:
+      type: string
+      description: The unique identifier value
+      example: "abc123def456"
+
+# Common Enums
+SortOrder:
+  type: string
+  enum: ["asc", "desc"]
+  description: Sort order for queries
+  example: "asc"
+
+ContentType:
+  type: string
+  enum: ["video", "image", "audio", "document", "other"]
+  description: Type of content
+  example: "video"
+
+DownloadStatus:
+  type: string
+  enum: ["pending", "downloading", "completed", "failed", "cancelled"]
+  description: Status of download operation
+  example: "completed"
+
+ProcessingStatus:
+  type: string
+  enum: ["pending", "processing", "completed", "failed", "cancelled"]
+  description: Status of processing operation
+  example: "processing"
+
+# Common Metadata
+MediaMetadata:
+  type: object
+  properties:
+    title:
+      type: string
+      description: Media title
+      example: "Amazing Video Title"
+    description:
+      type: string
+      description: Media description
+      example: "This is an amazing video about..."
+    duration:
+      type: integer
+      description: Duration in seconds
+      example: 300
+    fileSize:
+      type: integer
+      description: File size in bytes
+      example: 1048576
+    mimeType:
+      type: string
+      description: MIME type of the media
+      example: "video/mp4"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the media was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the media was last updated
+      example: "2024-01-15T10:30:00Z"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags associated with the media
+      example: ["tutorial", "programming", "javascript"]
+
+# Rate Limit Information
+RateLimitInfo:
+  type: object
+  required:
+    - limit
+    - remaining
+    - reset
+    - retryAfter
+  properties:
+    limit:
+      type: integer
+      description: Maximum number of requests allowed
+      example: 1000
+    remaining:
+      type: integer
+      description: Number of requests remaining
+      example: 950
+    reset:
+      type: string
+      format: date-time
+      description: When the rate limit resets
+      example: "2024-01-15T11:00:00Z"
+    retryAfter:
+      type: integer
+      description: Seconds to wait before retrying
+      example: 60
+
+# Common Query Parameters
+SearchQuery:
+  type: object
+  properties:
+    q:
+      type: string
+      description: Search query string
+      example: "javascript tutorial"
+    filters:
+      type: object
+      description: Search filters
+      additionalProperties: true
+    sortBy:
+      type: string
+      description: Field to sort by
+      example: "createdAt"
+    sortOrder:
+      $ref: "#/SortOrder"
+    page:
+      type: integer
+      minimum: 1
+      description: Page number
+      example: 1
+    pageSize:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: Number of items per page
+      example: 20
+
+# Health Check Response
+HealthStatus:
+  type: object
+  required:
+    - status
+    - timestamp
+    - version
+  properties:
+    status:
+      type: string
+      enum: ["healthy", "degraded", "unhealthy"]
+      description: Overall system health status
+      example: "healthy"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the health check was performed
+      example: "2024-01-15T10:30:00Z"
+    version:
+      type: string
+      description: API version
+      example: "1.0.0"
+    services:
+      type: object
+      description: Status of individual services
+      additionalProperties:
+        type: object
+        properties:
+          status:
+            type: string
+            enum: ["healthy", "degraded", "unhealthy"]
+          lastChecked:
+            type: string
+            format: date-time
+          responseTime:
+            type: number
+            description: Response time in milliseconds
+          error:
+            type: string
+            description: Error message if unhealthy
+      example:
+        database:
+          status: "healthy"
+          lastChecked: "2024-01-15T10:30:00Z"
+          responseTime: 5.2
+        redis:
+          status: "healthy"
+          lastChecked: "2024-01-15T10:30:00Z"
+          responseTime: 1.8
+        youtube_api:
+          status: "healthy"
+          lastChecked: "2024-01-15T10:30:00Z"
+          responseTime: 150.5
+
+# System Metrics
+SystemMetrics:
+  type: object
+  properties:
+    requests:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total requests processed
+          example: 1000000
+        rate:
+          type: number
+          description: Requests per second
+          example: 150.5
+        errors:
+          type: integer
+          description: Number of error responses
+          example: 1250
+        errorRate:
+          type: number
+          description: Error rate percentage
+          example: 0.125
+    performance:
+      type: object
+      properties:
+        averageResponseTime:
+          type: number
+          description: Average response time in milliseconds
+          example: 85.3
+        p95ResponseTime:
+          type: number
+          description: 95th percentile response time
+          example: 250.7
+        p99ResponseTime:
+          type: number
+          description: 99th percentile response time
+          example: 500.2
+    resources:
+      type: object
+      properties:
+        cpuUsage:
+          type: number
+          description: CPU usage percentage
+          example: 45.2
+        memoryUsage:
+          type: number
+          description: Memory usage percentage
+          example: 67.8
+        diskUsage:
+          type: number
+          description: Disk usage percentage
+          example: 23.4

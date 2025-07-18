@@ -1,0 +1,903 @@
+# Batch Operations Schemas
+
+BatchOperation:
+  type: object
+  required:
+    - id
+    - type
+    - status
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique batch operation identifier
+      example: "batch_abc123def456"
+    type:
+      type: string
+      enum: ["download", "upload", "process", "analyze", "migrate", "cleanup", "export", "import"]
+      description: Type of batch operation
+      example: "download"
+    name:
+      type: string
+      description: Human-readable name for the batch operation
+      example: "JavaScript Tutorials Download Batch"
+    description:
+      type: string
+      description: Description of the batch operation
+      example: "Batch download of JavaScript tutorial videos from YouTube"
+    userId:
+      type: string
+      description: User ID who initiated the batch operation
+      example: "user_def456ghi789"
+    status:
+      $ref: "#/BatchOperationStatus"
+    progress:
+      type: number
+      description: Overall progress percentage (0-100)
+      example: 75.5
+    totalItems:
+      type: integer
+      description: Total number of items in the batch
+      example: 50
+    completedItems:
+      type: integer
+      description: Number of completed items
+      example: 38
+    failedItems:
+      type: integer
+      description: Number of failed items
+      example: 2
+    skippedItems:
+      type: integer
+      description: Number of skipped items
+      example: 1
+    pendingItems:
+      type: integer
+      description: Number of pending items
+      example: 9
+    createdAt:
+      type: string
+      format: date-time
+      description: When the batch operation was created
+      example: "2024-01-15T10:30:00Z"
+    startedAt:
+      type: string
+      format: date-time
+      description: When the batch operation started
+      example: "2024-01-15T10:30:15Z"
+    completedAt:
+      type: string
+      format: date-time
+      description: When the batch operation completed
+      example: "2024-01-15T11:15:30Z"
+    estimatedCompletionTime:
+      type: string
+      format: date-time
+      description: Estimated completion time
+      example: "2024-01-15T11:20:00Z"
+    elapsedTime:
+      type: integer
+      description: Elapsed time in seconds
+      example: 2715
+    estimatedTimeRemaining:
+      type: integer
+      description: Estimated time remaining in seconds
+      example: 285
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Batch operation priority
+      example: "normal"
+    concurrency:
+      type: integer
+      description: Number of concurrent operations
+      example: 5
+    maxConcurrency:
+      type: integer
+      description: Maximum concurrent operations allowed
+      example: 10
+    configuration:
+      $ref: "#/BatchOperationConfiguration"
+    items:
+      type: array
+      items:
+        $ref: "#/BatchOperationItem"
+      description: Individual items in the batch
+    results:
+      $ref: "#/BatchOperationResults"
+    errors:
+      type: array
+      items:
+        $ref: "#/BatchOperationError"
+      description: Batch-level errors
+    metrics:
+      $ref: "#/BatchOperationMetrics"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags associated with the batch operation
+      example: ["tutorial", "javascript", "educational"]
+    isRetryable:
+      type: boolean
+      description: Whether the batch operation can be retried
+      example: true
+    retryCount:
+      type: integer
+      description: Number of times this batch has been retried
+      example: 0
+    maxRetries:
+      type: integer
+      description: Maximum number of retries allowed
+      example: 3
+    parentBatchId:
+      type: string
+      description: Parent batch ID (for sub-batches)
+      example: "batch_parent123"
+    childBatches:
+      type: array
+      items:
+        $ref: "#/BatchOperation"
+      description: Child batch operations
+    webhook:
+      type: string
+      format: uri
+      description: Webhook URL to call on completion
+      example: "https://myapp.com/webhook/batch-complete"
+    callbackData:
+      type: object
+      description: Additional data to include in webhook
+      additionalProperties: true
+    metadata:
+      type: object
+      description: Additional batch metadata
+      additionalProperties: true
+
+BatchOperationStatus:
+  type: string
+  enum: ["pending", "queued", "running", "paused", "completed", "failed", "cancelled", "expired"]
+  description: Batch operation status
+  example: "running"
+
+BatchOperationConfiguration:
+  type: object
+  properties:
+    concurrency:
+      type: integer
+      description: Number of concurrent operations
+      example: 5
+    retryPolicy:
+      type: object
+      properties:
+        maxRetries:
+          type: integer
+          description: Maximum number of retries per item
+          example: 3
+        retryDelay:
+          type: integer
+          description: Initial retry delay in seconds
+          example: 60
+        backoffMultiplier:
+          type: number
+          description: Backoff multiplier for retry delays
+          example: 2.0
+        maxRetryDelay:
+          type: integer
+          description: Maximum retry delay in seconds
+          example: 3600
+      description: Retry policy configuration
+    timeoutPolicy:
+      type: object
+      properties:
+        itemTimeout:
+          type: integer
+          description: Timeout per item in seconds
+          example: 300
+        batchTimeout:
+          type: integer
+          description: Overall batch timeout in seconds
+          example: 7200
+      description: Timeout policy configuration
+    failurePolicy:
+      type: object
+      properties:
+        continueOnFailure:
+          type: boolean
+          description: Continue processing other items if some fail
+          example: true
+        maxFailureRate:
+          type: number
+          description: Maximum acceptable failure rate (0-1)
+          example: 0.1
+        stopOnCriticalFailure:
+          type: boolean
+          description: Stop batch on critical failures
+          example: true
+      description: Failure handling policy
+    notificationPolicy:
+      type: object
+      properties:
+        notifyOnStart:
+          type: boolean
+          description: Send notification when batch starts
+          example: true
+        notifyOnComplete:
+          type: boolean
+          description: Send notification when batch completes
+          example: true
+        notifyOnFailure:
+          type: boolean
+          description: Send notification on batch failure
+          example: true
+        notifyOnProgress:
+          type: boolean
+          description: Send progress notifications
+          example: false
+        progressInterval:
+          type: integer
+          description: Progress notification interval in seconds
+          example: 300
+      description: Notification policy
+    resourceLimits:
+      type: object
+      properties:
+        maxMemoryUsage:
+          type: integer
+          description: Maximum memory usage in bytes
+          example: 1073741824
+        maxDiskUsage:
+          type: integer
+          description: Maximum disk usage in bytes
+          example: 10737418240
+        maxBandwidth:
+          type: integer
+          description: Maximum bandwidth usage in bytes per second
+          example: 10485760
+      description: Resource usage limits
+    customSettings:
+      type: object
+      description: Custom operation-specific settings
+      additionalProperties: true
+
+BatchOperationItem:
+  type: object
+  required:
+    - id
+    - input
+    - status
+  properties:
+    id:
+      type: string
+      description: Unique item identifier within the batch
+      example: "item_abc123def456"
+    input:
+      type: object
+      description: Input data for the item
+      additionalProperties: true
+    output:
+      type: object
+      description: Output data from the item
+      additionalProperties: true
+    status:
+      type: string
+      enum: ["pending", "running", "completed", "failed", "skipped", "cancelled"]
+      description: Item status
+      example: "completed"
+    progress:
+      type: number
+      description: Item progress percentage (0-100)
+      example: 100.0
+    startedAt:
+      type: string
+      format: date-time
+      description: When the item processing started
+      example: "2024-01-15T10:32:00Z"
+    completedAt:
+      type: string
+      format: date-time
+      description: When the item processing completed
+      example: "2024-01-15T10:33:30Z"
+    duration:
+      type: integer
+      description: Processing duration in seconds
+      example: 90
+    retryCount:
+      type: integer
+      description: Number of times this item has been retried
+      example: 0
+    error:
+      $ref: "#/BatchOperationError"
+    metadata:
+      type: object
+      description: Additional item metadata
+      additionalProperties: true
+
+BatchOperationResults:
+  type: object
+  properties:
+    summary:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          description: Total number of items
+          example: 50
+        successfulItems:
+          type: integer
+          description: Number of successful items
+          example: 45
+        failedItems:
+          type: integer
+          description: Number of failed items
+          example: 3
+        skippedItems:
+          type: integer
+          description: Number of skipped items
+          example: 2
+        successRate:
+          type: number
+          description: Success rate percentage
+          example: 90.0
+        averageProcessingTime:
+          type: number
+          description: Average processing time per item in seconds
+          example: 45.5
+        totalProcessingTime:
+          type: integer
+          description: Total processing time in seconds
+          example: 2275
+      description: Results summary
+    outputs:
+      type: array
+      items:
+        type: object
+        properties:
+          itemId:
+            type: string
+          output:
+            type: object
+            additionalProperties: true
+          status:
+            type: string
+          processingTime:
+            type: number
+      description: Individual item outputs
+    artifacts:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+          url:
+            type: string
+            format: uri
+          size:
+            type: integer
+          createdAt:
+            type: string
+            format: date-time
+      description: Generated artifacts
+    reports:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          type:
+            type: string
+          url:
+            type: string
+            format: uri
+          generatedAt:
+            type: string
+            format: date-time
+      description: Generated reports
+    logs:
+      type: array
+      items:
+        type: object
+        properties:
+          timestamp:
+            type: string
+            format: date-time
+          level:
+            type: string
+            enum: ["debug", "info", "warn", "error"]
+          message:
+            type: string
+          itemId:
+            type: string
+          metadata:
+            type: object
+            additionalProperties: true
+      description: Batch operation logs
+
+BatchOperationError:
+  type: object
+  properties:
+    code:
+      type: string
+      description: Error code
+      example: "ITEM_PROCESSING_FAILED"
+    message:
+      type: string
+      description: Error message
+      example: "Failed to process item: Connection timeout"
+    details:
+      type: string
+      description: Detailed error information
+      example: "Connection timed out after 30 seconds while processing item abc123def456"
+    timestamp:
+      type: string
+      format: date-time
+      description: When the error occurred
+      example: "2024-01-15T10:31:45Z"
+    itemId:
+      type: string
+      description: ID of the item that failed
+      example: "item_abc123def456"
+    retryable:
+      type: boolean
+      description: Whether the error is retryable
+      example: true
+    severity:
+      type: string
+      enum: ["low", "medium", "high", "critical"]
+      description: Error severity
+      example: "medium"
+    category:
+      type: string
+      enum: ["network", "validation", "processing", "resource", "system"]
+      description: Error category
+      example: "network"
+    stackTrace:
+      type: string
+      description: Stack trace (if available)
+      example: "at processItem (batch.js:123:45)"
+    context:
+      type: object
+      description: Additional error context
+      additionalProperties: true
+
+BatchOperationMetrics:
+  type: object
+  properties:
+    performance:
+      type: object
+      properties:
+        itemsPerSecond:
+          type: number
+          description: Items processed per second
+          example: 1.5
+        averageItemDuration:
+          type: number
+          description: Average item processing duration in seconds
+          example: 45.5
+        medianItemDuration:
+          type: number
+          description: Median item processing duration in seconds
+          example: 42.0
+        fastestItemDuration:
+          type: number
+          description: Fastest item processing duration in seconds
+          example: 15.2
+        slowestItemDuration:
+          type: number
+          description: Slowest item processing duration in seconds
+          example: 125.8
+      description: Performance metrics
+    resources:
+      type: object
+      properties:
+        peakMemoryUsage:
+          type: integer
+          description: Peak memory usage in bytes
+          example: 536870912
+        averageMemoryUsage:
+          type: integer
+          description: Average memory usage in bytes
+          example: 268435456
+        totalDiskUsage:
+          type: integer
+          description: Total disk usage in bytes
+          example: 5368709120
+        totalBandwidthUsage:
+          type: integer
+          description: Total bandwidth usage in bytes
+          example: 1073741824
+        averageCpuUsage:
+          type: number
+          description: Average CPU usage percentage
+          example: 45.5
+        peakCpuUsage:
+          type: number
+          description: Peak CPU usage percentage
+          example: 78.2
+      description: Resource usage metrics
+    errors:
+      type: object
+      properties:
+        totalErrors:
+          type: integer
+          description: Total number of errors
+          example: 5
+        errorRate:
+          type: number
+          description: Error rate percentage
+          example: 10.0
+        errorsByCategory:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Errors by category
+          example:
+            network: 3
+            validation: 1
+            processing: 1
+        errorsBySeverity:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Errors by severity
+          example:
+            low: 1
+            medium: 3
+            high: 1
+            critical: 0
+      description: Error metrics
+    timeline:
+      type: array
+      items:
+        type: object
+        properties:
+          timestamp:
+            type: string
+            format: date-time
+          event:
+            type: string
+          data:
+            type: object
+            additionalProperties: true
+      description: Timeline of significant events
+
+# Request/Response Objects
+
+BatchOperationRequest:
+  type: object
+  required:
+    - type
+    - items
+  properties:
+    type:
+      type: string
+      enum: ["download", "upload", "process", "analyze", "migrate", "cleanup", "export", "import"]
+      description: Type of batch operation
+      example: "download"
+    name:
+      type: string
+      description: Name for the batch operation
+      example: "JavaScript Tutorials Download"
+    description:
+      type: string
+      description: Description of the batch operation
+      example: "Batch download of JavaScript tutorial videos"
+    items:
+      type: array
+      items:
+        type: object
+        additionalProperties: true
+      description: Items to process in the batch
+    configuration:
+      $ref: "#/BatchOperationConfiguration"
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Batch priority
+      example: "normal"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Tags for the batch operation
+      example: ["tutorial", "javascript"]
+    webhook:
+      type: string
+      format: uri
+      description: Webhook URL for notifications
+      example: "https://myapp.com/webhook/batch-complete"
+    callbackData:
+      type: object
+      description: Additional data for webhook
+      additionalProperties: true
+    scheduledFor:
+      type: string
+      format: date-time
+      description: When to start the batch operation
+      example: "2024-01-15T12:00:00Z"
+    expiresAt:
+      type: string
+      format: date-time
+      description: When the batch operation expires
+      example: "2024-01-16T12:00:00Z"
+
+BatchOperationResponse:
+  type: object
+  properties:
+    batchId:
+      type: string
+      description: Unique batch operation identifier
+      example: "batch_abc123def456"
+    status:
+      $ref: "#/BatchOperationStatus"
+    message:
+      type: string
+      description: Human-readable status message
+      example: "Batch operation created successfully"
+    estimatedStartTime:
+      type: string
+      format: date-time
+      description: Estimated start time
+      example: "2024-01-15T10:30:00Z"
+    estimatedCompletionTime:
+      type: string
+      format: date-time
+      description: Estimated completion time
+      example: "2024-01-15T11:30:00Z"
+    queuePosition:
+      type: integer
+      description: Position in the queue
+      example: 3
+    createdAt:
+      type: string
+      format: date-time
+      description: When the batch was created
+      example: "2024-01-15T10:30:00Z"
+
+BatchOperationUpdate:
+  type: object
+  properties:
+    name:
+      type: string
+      description: Updated name
+      example: "Updated JavaScript Tutorials Download"
+    description:
+      type: string
+      description: Updated description
+      example: "Updated batch download of JavaScript tutorial videos"
+    priority:
+      type: string
+      enum: ["low", "normal", "high", "urgent"]
+      description: Updated priority
+      example: "high"
+    configuration:
+      $ref: "#/BatchOperationConfiguration"
+    tags:
+      type: array
+      items:
+        type: string
+      description: Updated tags
+      example: ["tutorial", "javascript", "advanced"]
+    webhook:
+      type: string
+      format: uri
+      description: Updated webhook URL
+      example: "https://myapp.com/webhook/batch-complete-updated"
+    callbackData:
+      type: object
+      description: Updated callback data
+      additionalProperties: true
+
+BatchOperationList:
+  type: object
+  properties:
+    batches:
+      type: array
+      items:
+        $ref: "#/BatchOperation"
+      description: List of batch operations
+    pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          description: Current page
+          example: 1
+        pageSize:
+          type: integer
+          description: Number of items per page
+          example: 20
+        totalItems:
+          type: integer
+          description: Total number of items
+          example: 150
+        totalPages:
+          type: integer
+          description: Total number of pages
+          example: 8
+        hasNext:
+          type: boolean
+          description: Whether there are more pages
+          example: true
+        hasPrevious:
+          type: boolean
+          description: Whether there are previous pages
+          example: false
+      description: Pagination information
+    filters:
+      type: object
+      properties:
+        status:
+          type: array
+          items:
+            $ref: "#/BatchOperationStatus"
+        type:
+          type: array
+          items:
+            type: string
+        createdAfter:
+          type: string
+          format: date-time
+        createdBefore:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+      description: Applied filters
+    sort:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Sort field
+          example: "createdAt"
+        order:
+          type: string
+          enum: ["asc", "desc"]
+          description: Sort order
+          example: "desc"
+      description: Sort configuration
+
+BatchOperationStats:
+  type: object
+  properties:
+    totalBatches:
+      type: integer
+      description: Total number of batches
+      example: 1250
+    activeBatches:
+      type: integer
+      description: Number of active batches
+      example: 15
+    completedBatches:
+      type: integer
+      description: Number of completed batches
+      example: 1180
+    failedBatches:
+      type: integer
+      description: Number of failed batches
+      example: 55
+    batchesByType:
+      type: object
+      additionalProperties:
+        type: integer
+      description: Batches by type
+      example:
+        download: 800
+        upload: 200
+        process: 150
+        analyze: 100
+    batchesByStatus:
+      type: object
+      additionalProperties:
+        type: integer
+      description: Batches by status
+      example:
+        pending: 5
+        running: 10
+        completed: 1180
+        failed: 55
+    averageProcessingTime:
+      type: number
+      description: Average batch processing time in seconds
+      example: 1800.5
+    totalProcessingTime:
+      type: integer
+      description: Total processing time across all batches in seconds
+      example: 2250625
+    successRate:
+      type: number
+      description: Overall success rate percentage
+      example: 95.6
+    resourceUsage:
+      type: object
+      properties:
+        totalDiskUsage:
+          type: integer
+          description: Total disk usage in bytes
+          example: 1099511627776
+        totalBandwidthUsage:
+          type: integer
+          description: Total bandwidth usage in bytes
+          example: 549755813888
+        averageMemoryUsage:
+          type: integer
+          description: Average memory usage in bytes
+          example: 1073741824
+      description: Resource usage statistics
+    generatedAt:
+      type: string
+      format: date-time
+      description: When the stats were generated
+      example: "2024-01-15T10:30:00Z"
+
+# Batch Templates
+
+BatchTemplate:
+  type: object
+  required:
+    - id
+    - name
+    - type
+    - configuration
+  properties:
+    id:
+      type: string
+      description: Unique template identifier
+      example: "template_abc123def456"
+    name:
+      type: string
+      description: Template name
+      example: "Video Download Template"
+    description:
+      type: string
+      description: Template description
+      example: "Standard template for downloading video content"
+    type:
+      type: string
+      enum: ["download", "upload", "process", "analyze", "migrate", "cleanup", "export", "import"]
+      description: Operation type
+      example: "download"
+    configuration:
+      $ref: "#/BatchOperationConfiguration"
+    defaultTags:
+      type: array
+      items:
+        type: string
+      description: Default tags for batches created from this template
+      example: ["video", "download"]
+    isPublic:
+      type: boolean
+      description: Whether the template is publicly available
+      example: false
+    createdBy:
+      type: string
+      description: User ID who created the template
+      example: "user_def456ghi789"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the template was created
+      example: "2024-01-15T10:30:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the template was last updated
+      example: "2024-01-15T10:30:00Z"
+    usageCount:
+      type: integer
+      description: Number of times the template has been used
+      example: 45
+    version:
+      type: string
+      description: Template version
+      example: "1.2.0"
+    metadata:
+      type: object
+      description: Additional template metadata
+      additionalProperties: true

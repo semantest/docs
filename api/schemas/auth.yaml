@@ -1,0 +1,525 @@
+# Authentication Schemas
+
+LoginRequest:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      format: email
+      description: User email address
+      example: "user@example.com"
+    password:
+      type: string
+      format: password
+      description: User password
+      example: "SecureP@ssw0rd"
+    rememberMe:
+      type: boolean
+      description: Whether to remember the user for longer sessions
+      example: true
+    clientId:
+      type: string
+      description: OAuth2 client ID
+      example: "semantest-web-client"
+    scopes:
+      type: array
+      items:
+        type: string
+      description: Requested OAuth2 scopes
+      example: ["read", "write", "videos:read"]
+
+LoginResponse:
+  type: object
+  required:
+    - accessToken
+    - tokenType
+    - expiresIn
+    - user
+  properties:
+    accessToken:
+      type: string
+      description: JWT access token
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    refreshToken:
+      type: string
+      description: Refresh token for obtaining new access tokens
+      example: "rt_abc123def456ghi789"
+    tokenType:
+      type: string
+      enum: ["Bearer"]
+      description: Token type
+      example: "Bearer"
+    expiresIn:
+      type: integer
+      description: Token expiration time in seconds
+      example: 3600
+    expiresAt:
+      type: string
+      format: date-time
+      description: Token expiration timestamp
+      example: "2024-01-15T11:30:00Z"
+    user:
+      $ref: "#/UserProfile"
+    scopes:
+      type: array
+      items:
+        type: string
+      description: Granted scopes
+      example: ["read", "write", "videos:read"]
+
+RefreshRequest:
+  type: object
+  required:
+    - refreshToken
+  properties:
+    refreshToken:
+      type: string
+      description: Refresh token
+      example: "rt_abc123def456ghi789"
+    clientId:
+      type: string
+      description: OAuth2 client ID
+      example: "semantest-web-client"
+
+RefreshResponse:
+  type: object
+  required:
+    - accessToken
+    - tokenType
+    - expiresIn
+  properties:
+    accessToken:
+      type: string
+      description: New JWT access token
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    refreshToken:
+      type: string
+      description: New refresh token (if rotated)
+      example: "rt_def456ghi789jkl012"
+    tokenType:
+      type: string
+      enum: ["Bearer"]
+      description: Token type
+      example: "Bearer"
+    expiresIn:
+      type: integer
+      description: Token expiration time in seconds
+      example: 3600
+    expiresAt:
+      type: string
+      format: date-time
+      description: Token expiration timestamp
+      example: "2024-01-15T12:30:00Z"
+
+UserProfile:
+  type: object
+  required:
+    - id
+    - email
+    - username
+    - createdAt
+    - updatedAt
+  properties:
+    id:
+      type: string
+      description: Unique user identifier
+      example: "user_abc123def456"
+    email:
+      type: string
+      format: email
+      description: User email address
+      example: "user@example.com"
+    username:
+      type: string
+      description: User username
+      example: "john_doe"
+    firstName:
+      type: string
+      description: User first name
+      example: "John"
+    lastName:
+      type: string
+      description: User last name
+      example: "Doe"
+    displayName:
+      type: string
+      description: User display name
+      example: "John Doe"
+    avatar:
+      type: string
+      format: uri
+      description: User avatar URL
+      example: "https://avatars.semantest.com/user_abc123def456.jpg"
+    tier:
+      type: string
+      enum: ["free", "pro", "enterprise"]
+      description: User subscription tier
+      example: "pro"
+    isActive:
+      type: boolean
+      description: Whether the user account is active
+      example: true
+    isEmailVerified:
+      type: boolean
+      description: Whether the user email is verified
+      example: true
+    lastLoginAt:
+      type: string
+      format: date-time
+      description: When the user last logged in
+      example: "2024-01-15T10:30:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the user account was created
+      example: "2024-01-01T00:00:00Z"
+    updatedAt:
+      type: string
+      format: date-time
+      description: When the user account was last updated
+      example: "2024-01-15T10:30:00Z"
+    preferences:
+      $ref: "#/UserPreferences"
+    permissions:
+      type: array
+      items:
+        type: string
+      description: User permissions
+      example: ["videos:read", "videos:write", "downloads:read"]
+    roles:
+      type: array
+      items:
+        type: string
+      description: User roles
+      example: ["user", "content-manager"]
+
+UserPreferences:
+  type: object
+  properties:
+    language:
+      type: string
+      description: Preferred language
+      example: "en"
+    timezone:
+      type: string
+      description: User timezone
+      example: "America/New_York"
+    theme:
+      type: string
+      enum: ["light", "dark", "auto"]
+      description: Preferred UI theme
+      example: "dark"
+    notifications:
+      $ref: "#/NotificationPreferences"
+    downloads:
+      $ref: "#/DownloadPreferences"
+    privacy:
+      $ref: "#/PrivacyPreferences"
+
+NotificationPreferences:
+  type: object
+  properties:
+    email:
+      type: boolean
+      description: Enable email notifications
+      example: true
+    push:
+      type: boolean
+      description: Enable push notifications
+      example: true
+    downloadComplete:
+      type: boolean
+      description: Notify when downloads complete
+      example: true
+    batchComplete:
+      type: boolean
+      description: Notify when batch operations complete
+      example: true
+    systemMaintenance:
+      type: boolean
+      description: Notify about system maintenance
+      example: true
+    newsletter:
+      type: boolean
+      description: Subscribe to newsletter
+      example: false
+
+DownloadPreferences:
+  type: object
+  properties:
+    defaultQuality:
+      type: string
+      enum: ["144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p"]
+      description: Default video quality
+      example: "1080p"
+    defaultFormat:
+      type: string
+      enum: ["mp4", "webm", "mkv", "avi", "mov"]
+      description: Default video format
+      example: "mp4"
+    autoDownload:
+      type: boolean
+      description: Enable automatic downloads
+      example: false
+    downloadPath:
+      type: string
+      description: Default download path
+      example: "/downloads/videos"
+    parallelDownloads:
+      type: integer
+      minimum: 1
+      maximum: 10
+      description: Maximum parallel downloads
+      example: 3
+    bandwidth:
+      type: integer
+      description: Bandwidth limit in KB/s (0 for unlimited)
+      example: 0
+
+PrivacyPreferences:
+  type: object
+  properties:
+    analyticsOptOut:
+      type: boolean
+      description: Opt out of analytics tracking
+      example: false
+    shareUsageData:
+      type: boolean
+      description: Share usage data for improvement
+      example: true
+    publicProfile:
+      type: boolean
+      description: Make profile public
+      example: false
+    showActivity:
+      type: boolean
+      description: Show activity in public profile
+      example: false
+
+ApiKey:
+  type: object
+  required:
+    - id
+    - name
+    - key
+    - createdAt
+  properties:
+    id:
+      type: string
+      description: Unique API key identifier
+      example: "key_abc123def456"
+    name:
+      type: string
+      description: API key name
+      example: "My Integration Key"
+    key:
+      type: string
+      description: The API key (only shown once)
+      example: "sk_abc123def456ghi789jkl012"
+    scopes:
+      type: array
+      items:
+        type: string
+      description: API key scopes
+      example: ["read", "videos:read", "downloads:read"]
+    isActive:
+      type: boolean
+      description: Whether the API key is active
+      example: true
+    expiresAt:
+      type: string
+      format: date-time
+      description: When the API key expires
+      example: "2025-01-15T10:30:00Z"
+    lastUsedAt:
+      type: string
+      format: date-time
+      description: When the API key was last used
+      example: "2024-01-15T10:30:00Z"
+    createdAt:
+      type: string
+      format: date-time
+      description: When the API key was created
+      example: "2024-01-01T00:00:00Z"
+    rateLimit:
+      type: object
+      properties:
+        requestsPerHour:
+          type: integer
+          description: Maximum requests per hour
+          example: 10000
+        requestsPerMinute:
+          type: integer
+          description: Maximum requests per minute
+          example: 1000
+
+CreateApiKeyRequest:
+  type: object
+  required:
+    - name
+    - scopes
+  properties:
+    name:
+      type: string
+      description: Name for the API key
+      example: "My Integration Key"
+    scopes:
+      type: array
+      items:
+        type: string
+      description: Requested scopes
+      example: ["read", "videos:read"]
+    expiresAt:
+      type: string
+      format: date-time
+      description: When the API key should expire
+      example: "2025-01-15T10:30:00Z"
+    description:
+      type: string
+      description: Description of the API key usage
+      example: "API key for my video processing application"
+
+UpdateUserProfileRequest:
+  type: object
+  properties:
+    firstName:
+      type: string
+      description: User first name
+      example: "John"
+    lastName:
+      type: string
+      description: User last name
+      example: "Doe"
+    displayName:
+      type: string
+      description: User display name
+      example: "John Doe"
+    avatar:
+      type: string
+      format: uri
+      description: User avatar URL
+      example: "https://avatars.semantest.com/user_abc123def456.jpg"
+    preferences:
+      $ref: "#/UserPreferences"
+
+ChangePasswordRequest:
+  type: object
+  required:
+    - currentPassword
+    - newPassword
+  properties:
+    currentPassword:
+      type: string
+      format: password
+      description: Current password
+      example: "CurrentP@ssw0rd"
+    newPassword:
+      type: string
+      format: password
+      description: New password
+      example: "NewSecureP@ssw0rd"
+    confirmPassword:
+      type: string
+      format: password
+      description: Confirm new password
+      example: "NewSecureP@ssw0rd"
+
+# OAuth2 Schemas
+OAuth2AuthorizeRequest:
+  type: object
+  required:
+    - responseType
+    - clientId
+    - redirectUri
+  properties:
+    responseType:
+      type: string
+      enum: ["code", "token"]
+      description: OAuth2 response type
+      example: "code"
+    clientId:
+      type: string
+      description: OAuth2 client ID
+      example: "semantest-web-client"
+    redirectUri:
+      type: string
+      format: uri
+      description: Redirect URI after authorization
+      example: "https://myapp.example.com/callback"
+    scope:
+      type: string
+      description: Requested scopes (space-separated)
+      example: "read write videos:read"
+    state:
+      type: string
+      description: State parameter for CSRF protection
+      example: "abc123def456"
+
+OAuth2TokenRequest:
+  type: object
+  required:
+    - grantType
+    - clientId
+  properties:
+    grantType:
+      type: string
+      enum: ["authorization_code", "refresh_token", "client_credentials"]
+      description: OAuth2 grant type
+      example: "authorization_code"
+    clientId:
+      type: string
+      description: OAuth2 client ID
+      example: "semantest-web-client"
+    clientSecret:
+      type: string
+      description: OAuth2 client secret
+      example: "client_secret_abc123def456"
+    code:
+      type: string
+      description: Authorization code (for authorization_code grant)
+      example: "auth_code_abc123def456"
+    redirectUri:
+      type: string
+      format: uri
+      description: Redirect URI (for authorization_code grant)
+      example: "https://myapp.example.com/callback"
+    refreshToken:
+      type: string
+      description: Refresh token (for refresh_token grant)
+      example: "rt_abc123def456ghi789"
+    scope:
+      type: string
+      description: Requested scopes (space-separated)
+      example: "read write videos:read"
+
+OAuth2TokenResponse:
+  type: object
+  required:
+    - accessToken
+    - tokenType
+    - expiresIn
+  properties:
+    accessToken:
+      type: string
+      description: Access token
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    tokenType:
+      type: string
+      enum: ["Bearer"]
+      description: Token type
+      example: "Bearer"
+    expiresIn:
+      type: integer
+      description: Token expiration time in seconds
+      example: 3600
+    refreshToken:
+      type: string
+      description: Refresh token
+      example: "rt_abc123def456ghi789"
+    scope:
+      type: string
+      description: Granted scopes (space-separated)
+      example: "read write videos:read"
