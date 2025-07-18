@@ -1,0 +1,18 @@
+{
+  "name": "@semantest/unsplash.com",
+  "version": "1.0.0",
+  "description": "Unsplash domain module for Semantest",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": ["unsplash", "domain", "ddd", "semantest"],
+  "author": "Semantest Team",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "@semantest/core": "^1.0.0"
+  }
+}
