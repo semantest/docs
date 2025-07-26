@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="800" viewBox="0 0 1280 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Browser Chrome -->
+  <rect width="1280" height="800" fill="#F9FAFB"/>
+  <rect width="1280" height="60" fill="#FFFFFF"/>
+  <line x1="0" y1="60" x2="1280" y2="60" stroke="#E5E7EB"/>
+  
+  <!-- Browser UI -->
+  <rect x="20" y="15" width="200" height="30" rx="15" fill="#F3F4F6"/>
+  <rect x="240" y="15" width="800" height="30" rx="5" fill="#F3F4F6"/>
+  <text x="250" y="35" font-family="Arial" font-size="14" fill="#6B7280">chat.openai.com</text>
+  
+  <!-- Main Content Area -->
+  <rect x="0" y="60" width="1280" height="740" fill="#FFFFFF"/>
+  
+  <!-- Template Modal Overlay -->
+  <rect x="0" y="60" width="1280" height="740" fill="#000000" opacity="0.3"/>
+  
+  <!-- Template Library Modal -->
+  <rect x="240" y="120" width="800" height="600" rx="10" fill="#FFFFFF"/>
+  <rect x="240" y="120" width="800" height="60" rx="10" fill="#1E40AF"/>
+  
+  <!-- Modal Header -->
+  <text x="270" y="155" font-family="Arial" font-size="20" font-weight="bold" fill="white">Prompt Template Library</text>
+  <rect x="970" y="140" width="50" height="20" rx="5" fill="#FFFFFF" opacity="0.2"/>
+  <text x="995" y="155" font-family="Arial" font-size="14" fill="white" text-anchor="middle">✕</text>
+  
+  <!-- Search and Filter Bar -->
+  <rect x="270" y="200" width="500" height="40" rx="5" fill="#F3F4F6"/>
+  <text x="285" y="225" font-family="Arial" font-size="14" fill="#9CA3AF">🔍 Search templates...</text>
+  
+  <!-- Category Filter -->
+  <rect x="790" y="200" width="120" height="40" rx="5" fill="#F3F4F6"/>
+  <text x="805" y="225" font-family="Arial" font-size="14" fill="#374151">All Categories ▼</text>
+  
+  <!-- New Template Button -->
+  <rect x="920" y="200" width="90" height="40" rx="5" fill="#10B981"/>
+  <text x="965" y="225" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">+ New</text>
+  
+  <!-- Template Categories -->
+  <g transform="translate(270, 260)">
+    <rect x="0" y="0" width="80" height="30" rx="15" fill="#1E40AF"/>
+    <text x="40" y="20" font-family="Arial" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Coding</text>
+    
+    <rect x="90" y="0" width="80" height="30" rx="15" fill="#F3F4F6"/>
+    <text x="130" y="20" font-family="Arial" font-size="12" fill="#374151" text-anchor="middle">Writing</text>
+    
+    <rect x="180" y="0" width="80" height="30" rx="15" fill="#F3F4F6"/>
+    <text x="220" y="20" font-family="Arial" font-size="12" fill="#374151" text-anchor="middle">Analysis</text>
+    
+    <rect x="270" y="0" width="80" height="30" rx="15" fill="#F3F4F6"/>
+    <text x="310" y="20" font-family="Arial" font-size="12" fill="#374151" text-anchor="middle">Business</text>
+  </g>
+  
+  <!-- Template Grid -->
+  <g transform="translate(270, 310)">
+    <!-- Template 1 - Debug Python -->
+    <rect x="0" y="0" width="360" height="120" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/>
+    <rect x="0" y="0" width="360" height="35" rx="8" fill="#EEF2FF"/>
+    <text x="15" y="23" font-family="Arial" font-size="14" font-weight="bold" fill="#1E40AF">🐛 Debug Python Error</text>
+    <text x="300" y="23" font-family="Arial" font-size="12" fill="#6B7280">Ctrl+D</text>
+    <text x="15" y="60" font-family="Arial" font-size="13" fill="#6B7280">I'm getting this Python error:</text>
+    <text x="15" y="80" font-family="Arial" font-size="13" fill="#6B7280">[ERROR]</text>
+    <text x="15" y="100" font-family="Arial" font-size="13" fill="#6B7280">Can you help me understand and fix it?</text>
+    
+    <!-- Template 2 - Code Review -->
+    <rect x="380" y="0" width="360" height="120" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/>
+    <rect x="380" y="0" width="360" height="35" rx="8" fill="#EEF2FF"/>
+    <text x="395" y="23" font-family="Arial" font-size="14" font-weight="bold" fill="#1E40AF">👀 Code Review Request</text>
+    <text x="680" y="23" font-family="Arial" font-size="12" fill="#6B7280">Ctrl+R</text>
+    <text x="395" y="60" font-family="Arial" font-size="13" fill="#6B7280">Please review this code for:</text>
+    <text x="395" y="80" font-family="Arial" font-size="13" fill="#6B7280">• Best practices • Performance</text>
+    <text x="395" y="100" font-family="Arial" font-size="13" fill="#6B7280">• Security issues • Suggestions</text>
+    
+    <!-- Template 3 - Explain Code -->
+    <rect x="0" y="140" width="360" height="120" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/>
+    <rect x="0" y="140" width="360" height="35" rx="8" fill="#EEF2FF"/>
+    <text x="15" y="163" font-family="Arial" font-size="14" font-weight="bold" fill="#1E40AF">📚 Explain This Code</text>
+    <text x="300" y="163" font-family="Arial" font-size="12" fill="#6B7280">Ctrl+E</text>
+    <text x="15" y="200" font-family="Arial" font-size="13" fill="#6B7280">Can you explain what this code does</text>
+    <text x="15" y="220" font-family="Arial" font-size="13" fill="#6B7280">in simple terms? Include how it works</text>
+    <text x="15" y="240" font-family="Arial" font-size="13" fill="#6B7280">and any important concepts.</text>
+    
+    <!-- Template 4 - Optimize -->
+    <rect x="380" y="140" width="360" height="120" rx="8" fill="#FEF3C7" stroke="#F59E0B"/>
+    <rect x="380" y="140" width="360" height="35" rx="8" fill="#FEF3C7"/>
+    <text x="395" y="163" font-family="Arial" font-size="14" font-weight="bold" fill="#D97706">⚡ Optimize Performance</text>
+    <text x="680" y="163" font-family="Arial" font-size="12" fill="#92400E">Ctrl+O</text>
+    <text x="395" y="200" font-family="Arial" font-size="13" fill="#6B7280">Optimize this code for better</text>
+    <text x="395" y="220" font-family="Arial" font-size="13" fill="#6B7280">performance. Focus on time</text>
+    <text x="395" y="240" font-family="Arial" font-size="13" fill="#6B7280">complexity and memory usage.</text>
+    
+    <!-- Template 5 - Unit Test -->
+    <rect x="0" y="280" width="360" height="120" rx="8" fill="#F9FAFB" stroke="#E5E7EB"/>
+    <rect x="0" y="280" width="360" height="35" rx="8" fill="#D1FAE5"/>
+    <text x="15" y="303" font-family="Arial" font-size="14" font-weight="bold" fill="#059669">🧪 Write Unit Tests</text>
+    <text x="300" y="303" font-family="Arial" font-size="12" fill="#065F46">Ctrl+T</text>
+    <text x="15" y="340" font-family="Arial" font-size="13" fill="#6B7280">Write comprehensive unit tests for</text>
+    <text x="15" y="360" font-family="Arial" font-size="13" fill="#6B7280">this code including edge cases and</text>
+    <text x="15" y="380" font-family="Arial" font-size="13" fill="#6B7280">error scenarios.</text>
+  </g>
+  
+  <!-- Usage Stats -->
+  <rect x="270" y="650" width="740" height="50" rx="5" fill="#F3F4F6"/>
+  <text x="290" y="680" font-family="Arial" font-size="14" fill="#6B7280">📊 Most Used: Debug Python (127 times) • Code Review (89 times) • Explain Code (76 times)</text>
+  
+  <!-- Hover Effect -->
+  <rect x="650" y="450" width="360" height="120" rx="8" fill="#1E40AF" opacity="0.1"/>
+  <rect x="650" y="450" width="360" height="120" rx="8" fill="none" stroke="#1E40AF" stroke-width="2"/>
+  
+  <!-- Insert Button on Hover -->
+  <rect x="780" y="520" width="100" height="35" rx="5" fill="#1E40AF"/>
+  <text x="830" y="542" font-family="Arial" font-size="14" font-weight="bold" fill="white" text-anchor="middle">Insert →</text>
+  
+  <!-- Tooltip -->
+  <rect x="900" y="410" width="150" height="30" rx="5" fill="#374151"/>
+  <text x="975" y="430" font-family="Arial" font-size="12" fill="white" text-anchor="middle">Click to insert</text>
+  <path d="M 975 440 L 975 450" stroke="#374151" stroke-width="8" fill="none"/>
+</svg>

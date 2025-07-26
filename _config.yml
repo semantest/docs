@@ -1,25 +1,26 @@
 # Site settings
-title: "Semantest Ecosystem"
-description: "AI-driven automation tools for modern web development"
+title: "Semantest Framework"
+description: "Advanced browser automation and semantic testing platform with TypeScript-EDA architecture"
 baseurl: ""
-url: "https://semantest.com"
+url: "https://semantest.github.io"
 
 # Build settings
 markdown: kramdown
 highlighter: rouge
 permalink: pretty
+theme: minima
 
-# Collections for each project
+# Collections for modules and documentation
 collections:
-  typescript-eda:
+  modules:
     output: true
     permalink: /:collection/:name/
-  semantest:
+  guides:
     output: true
-    permalink: /:collection/:name/
-  semantest-chatgpt:
+    permalink: /guides/:name/
+  api:
     output: true
-    permalink: /:collection/:name/
+    permalink: /api/:name/
 
 # Plugins
 plugins:
@@ -27,67 +28,75 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
 
+# Navigation
+header_pages:
+  - getting-started.md
+  - architecture.md
+  - api-reference.md
+  - examples.md
+
 # Exclude from processing
 exclude:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
   - Gemfile
   - Gemfile.lock
-  - node_modules
+  - node_modules/
   - vendor/bundle/
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
-  - README.md
+  - "*.tgz"
+  - "package*.json"
+  - "tsconfig*.json"
+  - "jest.config.js"
+  - "playwright.config.ts"
+
+# Include
+include:
+  - _pages
 
 # Default layouts
 defaults:
   - scope:
       path: ""
-      type: "typescript-eda"
+      type: "posts"
     values:
-      layout: "project"
-      project: "typescript-eda"
+      layout: "post"
+      comments: true
   - scope:
       path: ""
-      type: "semantest"
+      type: "modules"
     values:
-      layout: "project"
-      project: "semantest"
+      layout: "module"
   - scope:
       path: ""
-      type: "semantest-chatgpt"
+      type: "guides"
     values:
-      layout: "project"
-      project: "semantest-chatgpt"
+      layout: "guide"
+  - scope:
+      path: ""
+      type: "api"
+    values:
+      layout: "api"
 
-# Site navigation
-nav_links:
-  - title: "TypeScript-EDA"
-    url: "/typescript-eda/"
-    description: "Core EDA framework"
-  - title: "Semantest" 
-    url: "/semantest/"
-    description: "AI automation framework"
-  - title: "ChatGPT Integration"
-    url: "/semantest-chatgpt/"
-    description: "ChatGPT automation"
+# SEO
+author: Semantest Team
+github_username: semantest
 
-# Project metadata
-projects:
-  typescript-eda:
-    name: "TypeScript-EDA"
-    description: "Event-driven architecture framework"
-    icon: "🏗️"
-    github: "https://github.com/typescript-eda/domain"
-    npm: "@typescript-eda/core"
-  semantest:
-    name: "Semantest"
-    description: "AI-driven web automation framework"
-    icon: "🤖"
-    github: "https://github.com/semantest/semantest"
-    npm: "@semantest/browser"
-  semantest-chatgpt:
-    name: "Semantest ChatGPT"
-    description: "ChatGPT automation specialist"
-    icon: "💬"
-    github: "https://github.com/semantest/semantest"
-    npm: "@semantest/chatgpt.com"
+# Kramdown settings
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+
+# Sass
+sass:
+  style: compressed
