@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeScript-EDA Documentation - Semantest Framework</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        .links {
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TypeScript-EDA Framework</h1>
+        
+        <div class="note">
+            <strong>Note:</strong> TypeScript-EDA has evolved into the Semantest Framework. 
+            This page provides information about the underlying event-driven architecture that powers Semantest.
+        </div>
+
+        <h2>About TypeScript-EDA</h2>
+        <p>TypeScript-EDA is the core event-driven architecture framework that provides the foundation for the Semantest testing platform. It implements Domain-Driven Design (DDD) patterns with event sourcing capabilities.</p>
+
+        <h3>Key Features</h3>
+        <ul>
+            <li><strong>Event-Driven Architecture:</strong> Built on proven DDD and EDA patterns</li>
+            <li><strong>@listen Decorators:</strong> Elegant event handling with TypeScript decorators</li>
+            <li><strong>Domain Entities:</strong> Rich domain models with value objects</li>
+            <li><strong>Hexagonal Architecture:</strong> Clean separation of concerns</li>
+            <li><strong>Test-Driven Development:</strong> Comprehensive testing support</li>
+        </ul>
+
+        <h3>Architecture Overview</h3>
+        <pre style="background: #f4f4f4; padding: 1rem; border-radius: 5px; overflow-x: auto;">
+TypeScript-EDA (Core Framework)
+    │
+    ├── Domain Layer
+    │   ├── Entities
+    │   ├── Value Objects
+    │   └── Domain Events
+    │
+    ├── Application Layer
+    │   ├── Command Handlers
+    │   ├── Event Handlers (@listen)
+    │   └── Query Handlers
+    │
+    └── Infrastructure Layer
+        ├── Repositories
+        ├── Message Bus
+        └── External Services
+        </pre>
+
+        <div class="links">
+            <h3>Quick Links</h3>
+            <a href="getting-started.html" class="btn btn-primary">🚀 Getting Started</a>
+            <a href="../" class="btn btn-primary">🏠 Back to Main</a>
+            <a href="https://github.com/semantest" class="btn btn-primary">📦 GitHub</a>
+        </div>
+
+        <h3>Related Projects</h3>
+        <ul>
+            <li><a href="../web-buddy/">Web-Buddy</a> - Generic web automation framework</li>
+            <li><a href="../chatgpt-buddy/">ChatGPT-Buddy</a> - ChatGPT automation implementation</li>
+        </ul>
+    </div>
+</body>
+</html>
