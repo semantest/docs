@@ -1,8 +1,8 @@
-# 🚀 Getting Started with Web-Buddy Framework
+# 🚀 Getting Started with Semantest
 
-**Interactive Browser Automation with Machine Learning**
+**AI-Powered Browser Testing That Speaks Your Language**
 
-Welcome to Web-Buddy Framework! This guide will get you up and running with intelligent browser automation in just a few minutes.
+Welcome to Semantest! This guide will get you up and running with natural language browser testing in just a few minutes.
 
 ## 📖 Table of Contents
 
@@ -27,19 +27,19 @@ Welcome to Web-Buddy Framework! This guide will get you up and running with inte
 
 **TypeScript/JavaScript:**
 ```bash
-npm install @web-buddy/client-ts
+npm install @semantest/client
 ```
 
 **Python:**
 ```bash
-pip install web-buddy-sdk
+pip install semantest
 ```
 
 ### 30-Second Setup
 
-1. **Start the Web-Buddy Server:**
+1. **Start the Semantest Server:**
 ```bash
-npx @web-buddy/server
+npx @semantest/server
 # Server starts at http://localhost:3000
 ```
 
@@ -53,9 +53,9 @@ npx @web-buddy/server
 
 **TypeScript:**
 ```typescript
-import { EventDrivenWebBuddyClient } from '@web-buddy/client-ts';
+import { Semantest } from '@semantest/client-ts';
 
-const client = new EventDrivenWebBuddyClient({
+const client = new Semantest({
     baseUrl: 'http://localhost:3000',
     apiKey: 'your-super-secret-client-key'
 });
@@ -76,9 +76,9 @@ console.log('Project selected:', result);
 
 **Python:**
 ```python
-from web_buddy_sdk import EventDrivenWebBuddyClient
+from semantest import Semantest
 
-client = EventDrivenWebBuddyClient(
+client = Semantest(
     base_url='http://localhost:3000',
     api_key='your-super-secret-client-key'
 )
@@ -93,7 +93,7 @@ result = await client.request_project_selection(
 print(f'Project selected: {result}')
 ```
 
-🎉 **Congratulations!** You just completed your first Web-Buddy automation!
+🎉 **Congratulations!** You just completed your first Semantest automation!
 
 ---
 
@@ -101,20 +101,20 @@ print(f'Project selected: {result}')
 
 ### 1. Event-Driven Architecture
 
-Web-Buddy is built on **pure event-driven communication**. Instead of calling methods like `clickButton()`, you send **domain events** like `ProjectSelectionRequested`.
+Semantest is built on **pure event-driven communication**. Instead of calling methods like `clickButton()`, you send **domain events** like `ProjectSelectionRequested`.
 
 ```typescript
 // ❌ Traditional approach (imperative)
 await client.clickProject('my-project');
 
-// ✅ Web-Buddy approach (event-driven)
+// ✅ Semantest approach (event-driven)
 await client.requestProjectSelection(extensionId, tabId, 'my-project');
 // Internally sends: ProjectSelectionRequested event
 ```
 
 ### 2. Interactive Training System
 
-Web-Buddy learns automation patterns by watching you demonstrate actions:
+Semantest learns automation patterns by watching you demonstrate actions:
 
 1. **Enable Training Mode**: `client.requestTrainingMode('chatgpt.com')`
 2. **Demonstrate Actions**: Click elements while training is active
@@ -133,7 +133,7 @@ Web-Buddy learns automation patterns by watching you demonstrate actions:
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│ 🌐 Web-Buddy Server                                             │
+│ 🌐 Semantest Server                                             │
 │ • Event routing & validation                                    │
 │ • Training system coordination                                  │
 │ • File download management                                      │
@@ -165,16 +165,16 @@ Let's build a complete ChatGPT automation workflow:
 ### Step 1: Setup and Connection
 
 ```typescript
-import { EventDrivenWebBuddyClient } from '@web-buddy/client-ts';
+import { Semantest } from '@semantest/client-ts';
 
-const client = new EventDrivenWebBuddyClient({
+const client = new Semantest({
     baseUrl: 'http://localhost:3000',
     apiKey: process.env.WEB_BUDDY_API_KEY || 'your-super-secret-client-key'
 });
 
 // Test connection
 const ping = await client.ping();
-console.log(`✅ Connected to Web-Buddy (${ping.latency}ms)`);
+console.log(`✅ Connected to Semantest (${ping.latency}ms)`);
 ```
 
 ### Step 2: Complete Workflow Automation
@@ -254,7 +254,7 @@ async function batchProcessPrompts() {
 
 ## 🎓 Training Your First Pattern
 
-The training system is Web-Buddy's **killer feature**. It learns by watching you, eliminating the need to write complex selectors.
+The training system is Semantest's **killer feature**. It learns by watching you, eliminating the need to write complex selectors.
 
 ### Step 1: Enable Training Mode
 
@@ -268,7 +268,7 @@ console.log(`🎯 Training enabled for session: ${trainingSession.sessionId}`);
 
 1. **Open ChatGPT** in your browser
 2. **Perform the action** you want to automate (e.g., click a project)
-3. **Web-Buddy learns** the pattern automatically
+3. **Semantest learns** the pattern automatically
 
 **What happens during training:**
 ```
@@ -324,7 +324,7 @@ console.log('🤖 Executed using learned pattern');
 
 ## ⚡ Event-Driven Architecture
 
-Web-Buddy's event-driven design makes it powerful and extensible:
+Semantest's event-driven design makes it powerful and extensible:
 
 ### Understanding Events
 
@@ -358,7 +358,7 @@ import {
     GoogleImageDownloadRequested,
     GoogleImageDownloadCompleted,
     GoogleImageDownloadFailed 
-} from '@web-buddy/client-ts';
+} from '@semantest/client-ts';
 
 // Send custom Google Images download event
 const downloadEvent = new GoogleImageDownloadRequested(
@@ -436,10 +436,10 @@ console.log('🔄 Workflow completed:', results.length, 'events processed');
 
 ### 🌐 Join the Community
 
-- **GitHub**: [github.com/web-buddy/framework](https://github.com/web-buddy/framework)
-- **Discord**: [discord.gg/web-buddy](https://discord.gg/web-buddy)
-- **Documentation**: [docs.web-buddy.dev](https://docs.web-buddy.dev)
-- **Examples**: [github.com/web-buddy/examples](https://github.com/web-buddy/examples)
+- **GitHub**: [github.com/semantest/framework](https://github.com/semantest/framework)
+- **Discord**: [discord.gg/semantest](https://discord.gg/semantest)
+- **Documentation**: [docs.semantest.dev](https://docs.semantest.dev)
+- **Examples**: [github.com/semantest/examples](https://github.com/semantest/examples)
 
 ### 📚 Learning Resources
 
@@ -452,24 +452,24 @@ console.log('🔄 Workflow completed:', results.length, 'events processed');
 
 ## 🆘 Need Help?
 
-- **Documentation Issues**: [docs.web-buddy.dev/issues](https://docs.web-buddy.dev/issues)
-- **SDK Problems**: [github.com/web-buddy/client-ts/issues](https://github.com/web-buddy/client-ts/issues)
-- **General Questions**: [Discord Community](https://discord.gg/web-buddy)
-- **Feature Requests**: [github.com/web-buddy/framework/discussions](https://github.com/web-buddy/framework/discussions)
+- **Documentation Issues**: [docs.semantest.dev/issues](https://docs.semantest.dev/issues)
+- **SDK Problems**: [github.com/semantest/client-ts/issues](https://github.com/semantest/client-ts/issues)
+- **General Questions**: [Discord Community](https://discord.gg/semantest)
+- **Feature Requests**: [github.com/semantest/framework/discussions](https://github.com/semantest/framework/discussions)
 
 ---
 
 ## 🎉 Success Stories
 
-> *"Web-Buddy reduced our testing automation maintenance from 40 hours/week to 2 hours/week. The training system adapts to UI changes automatically!"*  
+> *"Semantest reduced our testing automation maintenance from 40 hours/week to 2 hours/week. The training system adapts to UI changes automatically!"*  
 > — **Sarah Chen, QA Lead at TechCorp**
 
 > *"I automated our entire content creation workflow for social media. What used to take 3 hours now takes 10 minutes."*  
 > — **Mike Rodriguez, Marketing Manager**
 
-> *"The event-driven architecture made it incredibly easy to integrate Web-Buddy into our existing CI/CD pipeline."*  
+> *"The event-driven architecture made it incredibly easy to integrate Semantest into our existing CI/CD pipeline."*  
 > — **Alex Thompson, DevOps Engineer**
 
 ---
 
-**Ready to build amazing automation?** Start with the [Google Images tutorial](./GOOGLE_IMAGES_GETTING_STARTED.md) to see how Web-Buddy adapts to any website! 🚀
+**Ready to build amazing automation?** Start with the [Google Images tutorial](./GOOGLE_IMAGES_GETTING_STARTED.md) to see how Semantest adapts to any website! 🚀

@@ -1,6 +1,7 @@
 # Site settings
-title: "Semantest Framework"
-description: "Advanced browser automation and semantic testing platform with TypeScript-EDA architecture"
+title: "Semantest - AI-Powered Browser Testing"
+description: "Write browser tests like you'd explain them to a colleague. Natural language testing that actually works."
+tagline: "Browser testing that speaks your language"
 baseurl: ""
 url: "https://semantest.github.io"
 
@@ -21,6 +22,12 @@ collections:
   api:
     output: true
     permalink: /api/:name/
+  tutorials:
+    output: true
+    permalink: /tutorials/:name/
+  success-stories:
+    output: true
+    permalink: /success-stories/:name/
 
 # Plugins
 plugins:
@@ -30,10 +37,26 @@ plugins:
 
 # Navigation
 header_pages:
-  - getting-started.md
-  - architecture.md
+  - getting-started/README.md
+  - tutorials/real-world-amazon-testing.md
   - api-reference.md
+  - success-stories/README.md
   - examples.md
+
+# Custom navigation menu
+navigation:
+  - title: "Getting Started"
+    url: "/getting-started/"
+  - title: "Tutorials"
+    url: "/tutorials/"
+  - title: "API Reference"
+    url: "/api/"
+  - title: "Success Stories"
+    url: "/success-stories/"
+  - title: "GitHub"
+    url: "https://github.com/semantest/semantest"
+  - title: "Discord"
+    url: "https://discord.gg/semantest"
 
 # Exclude from processing
 exclude:
@@ -81,9 +104,26 @@ defaults:
     values:
       layout: "api"
 
-# SEO
+# SEO and Social
 author: Semantest Team
 github_username: semantest
+twitter_username: semantest
+logo: /assets/semantest-logo.png
+
+# SEO tags
+twitter:
+  card: summary_large_image
+  username: semantest
+  
+social:
+  name: Semantest
+  links:
+    - https://twitter.com/semantest
+    - https://github.com/semantest
+    - https://discord.gg/semantest
+
+# Google Analytics (add when ready)
+# google_analytics: UA-XXXXXXXXX
 
 # Kramdown settings
 kramdown:
